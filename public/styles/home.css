@@ -1,0 +1,56 @@
+.navbar {
+    -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+
+}
+
+.img-thumbnail {
+    border-radius: 50%;
+    -webkit-box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+}
+.navbar-welcome {
+    font-size: 30px;
+    padding-right: 5px;
+    display: inline-flex;
+    vertical-align: center;
+}
+
+.navbar-login {
+    display: inline-flex;
+    justify-content: center;
+
+}
+
+.overlay {
+    position:absolute;
+    top: 18vh;
+    height: 60vh;
+    width: 180vh;
+    left: 10vh;
+    display: inline-flex;
+}
+
+.logo-overlay {
+    height: 100%;
+    background-color: white;
+    -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+    font-size: 16px;
+    border: none;
+    border-radius: 50px;
+    display: inline-block;
+}
+
+.p-inputtext-lg {
+    border-radius: 50%;
+    -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+
+}
+
+.p-multiselect1 {
+    border-radius: 50px;
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+    opacity: 0;
+}
