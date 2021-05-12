@@ -164,7 +164,7 @@
            style="width: 30vh; background: white; margin-top: 2vh;-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
          border-radius: 15px; height: 85vh; text-align: center; margin-left: 1vh;">
         <div class="card" style="padding: 1vh">
-          <p-carousel :value="similarEvents" :numVisible="5" :numScroll="5" orientation="vertical" verticalViewPortHeight="60vh">
+          <p-carousel class="carousel" :value="similarEvents" :numVisible="5" :numScroll="5" :autoplayInterval="3000" orientation="vertical" verticalViewPortHeight="60vh">
             <template #header>
               <h5>Similar Events</h5>
             </template>
@@ -173,7 +173,7 @@
                 <div class="product-item-content">
                   <div class="p-mb-3">
 <!--                    TODO image-->
-                    <img :src="`${slotProps.data.image}`" :alt="slotProps.data.title" class="product-image" />
+                    <img :src="`${slotProps.data.eventImage}`" :alt="slotProps.data.title" class="product-image" />
                   </div>
                   <div>
                     <h4 class="p-mb-1">{{slotProps.data.title}}</h4>
@@ -241,7 +241,7 @@ export default {
               console.error(err);
             });
             this.getAllAttendees();
-            this.getEventImage();
+            this.getEventImage(this.eventInfo);
             this.getUserImage();
             this.getSimilarEvents();
             this.eventLoaded = true;
@@ -301,8 +301,8 @@ export default {
     },
 
 
-    getEventImage() {
-      let curEventInfo = this.eventInfo;
+    getEventImage(event) {
+      let curEventInfo = event;
       curEventInfo.eventImage = null;
       api.events.getImage(this.eventId)
           .then(res => {
@@ -338,6 +338,15 @@ export default {
     },
 
     getSimilarEvents() {
+      api.events.getFilteredEventsOnly(this.eventInfo.categories)
+      .then(res => {
+        this.similarEvents = res.data;
+        for (let i = 0; i < this.similarEvents.length; i++) {
+          this.getEventImage(this.similarEvents[i]);
+        }
+      }).catch(err => {
+        console.error(err);
+      });
 
     },
 
