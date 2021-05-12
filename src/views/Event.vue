@@ -14,12 +14,13 @@
          display: inline-flex;
          place-content: center;">
 
+<!--      MAIN CONTENT-->
       <div class="all-boxes"
            style="width: 130vh;
          background: white;
          margin-top: 2vh;
          -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
-         border-radius: 15px; height: 85vh; text-align: center">
+         border-radius: 30px; height: 85vh; text-align: center">
 
         <div  class="p-grid nested-grid" style="padding: 1vh; height: 85vh">
           <div class="p-col-8" style="text-align: -webkit-center">
@@ -39,7 +40,7 @@
               </div>
             </div>
             <!--          ATTENDEES-->
-            <div class="p-col-10" style="height: 28vh">
+            <div class="p-col-12" style="height: 28vh">
               <div class="box box-stretched">
                 <p-card class="all-attendees-card" style="width: 100%; height: 100%">
                   <template #header>
@@ -77,7 +78,7 @@
                   <p-card class="user-img-card" style="width: 100%; height: 100%">
                     <template #header>
                       <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
-                        <i class="pi pi-user icon" style="fontSize: 2.5vh"></i>
+                        <i class="pi pi-user icon"></i>
                         Host: {{eventInfo.organizerFirstName}} {{eventInfo.organizerLastName}}
                       </div>
                     </template>
@@ -162,27 +163,35 @@
 <!--      SIMILAR EVENTS-->
       <div class="similar-events-wrapper"
            style="width: 30vh; background: white; margin-top: 2vh;-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
-         border-radius: 15px; height: 85vh; text-align: center; margin-left: 1vh;">
-        <div class="card" style="padding: 1vh">
-          <p-carousel class="carousel" :value="similarEvents" :numVisible="5" :numScroll="5" :autoplayInterval="3000" orientation="vertical" verticalViewPortHeight="60vh">
-            <template #header>
-              <h5>Similar Events</h5>
-            </template>
-            <template #item="slotProps">
-              <div class="product-item">
-                <div class="product-item-content">
-                  <div class="p-mb-3">
-<!--                    TODO image-->
-                    <img :src="`${slotProps.data.eventImage}`" :alt="slotProps.data.title" class="product-image" />
+         border-radius: 30px; height: 85vh; text-align: center; margin-left: 1vh;">
+        <p-card class="similar-events-card" style="width: 100%; height: 100%">
+          <template #header>
+            <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
+              Similar Events
+            </div>
+          </template>
+          <template #content>
+            <div class="sim-card" style="padding: 1vh">
+              <p-carousel class="carousel" :value="similarEvents" :numVisible="5" :numScroll="5" :indicatorsContentClass="null" :autoplayInterval="3000" orientation="vertical" verticalViewPortHeight="60vh">
+
+                <template #item="slotProps">
+                  <div class="product-item">
+                    <div class="product-item-content">
+                      <div class="p-mb-3">
+                        <img :src="`${slotProps.data.eventImage}`" :alt="slotProps.data.title" class="product-image" />
+                      </div>
+                      <div>
+                        <h4 class="p-mb-1">{{slotProps.data.title}}</h4>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h4 class="p-mb-1">{{slotProps.data.title}}</h4>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </p-carousel>
-        </div>
+                </template>
+              </p-carousel>
+            </div>
+          </template>
+
+        </p-card>
+
       </div>
 
     </div>
@@ -304,7 +313,8 @@ export default {
     getEventImage(event) {
       let curEventInfo = event;
       curEventInfo.eventImage = null;
-      api.events.getImage(this.eventId)
+      let id = (curEventInfo.eventId) ? curEventInfo.eventId : curEventInfo.id;
+      api.events.getImage(id)
           .then(res => {
 
             let reader = new window.FileReader();
@@ -340,7 +350,11 @@ export default {
     getSimilarEvents() {
       api.events.getFilteredEventsOnly(this.eventInfo.categories)
       .then(res => {
-        this.similarEvents = res.data;
+        for (let j = 0; j < res.data.length; j++) {
+          if (res.data[j].eventId.toString() !== this.eventId) {
+            this.similarEvents.push(res.data[j]);
+          }
+        }
         for (let i = 0; i < this.similarEvents.length; i++) {
           this.getEventImage(this.similarEvents[i]);
         }
@@ -440,7 +454,7 @@ export default {
 }
 
 .all-attendees-card >>> .p-card-header {
-  background: #1d9203;
+  background: #167403;
   min-height: 5vh;
   color: white;
   border-top-left-radius: 30px;
@@ -462,5 +476,15 @@ export default {
 .product-image {
   width: 50%;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+}
+.similar-events-card {
+  border-radius: 30px;
+}
+.similar-events-card >>> .p-card-header {
+  background: #800404;
+  min-height: 5vh;
+  color: white;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
 }
 </style>
