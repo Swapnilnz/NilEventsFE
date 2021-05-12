@@ -70,10 +70,10 @@
 
           <div class="p-col-4">
             <div class="p-grid">
+              <!--                USER INFO-->
               <div class="p-col-12">
                 <div class="box box-stretched">
 
-                  <!--                USER INFO-->
                   <p-card class="user-img-card" style="width: 100%; height: 100%">
                     <template #header>
                       <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
@@ -90,8 +90,9 @@
                   </p-card>
                 </div>
               </div>
+
+              <!--                EVENT INFO-->
               <div class="p-col-12">
-                <!--                EVENT INFO-->
                 <p-card class="info-card" style="width: 100%; height: 100%">
                   <template #header>
                     <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
@@ -158,12 +159,12 @@
         </div>
       </div>
 
+<!--      SIMILAR EVENTS-->
       <div class="similar-events-wrapper"
            style="width: 30vh; background: white; margin-top: 2vh;-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
          border-radius: 15px; height: 85vh; text-align: center; margin-left: 1vh;">
-        <div class="card">
-          <p-carousel :value="similarEvents" :numVisible="5" :numScroll="5" orientation="vertical" verticalViewPortHeight="60vh"
-                    style="max-width: 400px; margin-top: 2em">
+        <div class="card" style="padding: 1vh">
+          <p-carousel :value="similarEvents" :numVisible="5" :numScroll="5" orientation="vertical" verticalViewPortHeight="60vh">
             <template #header>
               <h5>Similar Events</h5>
             </template>
@@ -171,12 +172,11 @@
               <div class="product-item">
                 <div class="product-item-content">
                   <div class="p-mb-3">
-                    <img src="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png" :alt="slotProps.data.name" class="product-image" />
+<!--                    TODO image-->
+                    <img :src="`${slotProps.data.image}`" :alt="slotProps.data.title" class="product-image" />
                   </div>
                   <div>
-                    <h4 class="p-mb-1">{{slotProps.data.name}}</h4>
-                    <h6 class="p-mt-0 p-mb-3">${{slotProps.data.price}}</h6>
-                    <span :class="'product-badge status-'+slotProps.data.inventoryStatus.toLowerCase()">{{slotProps.data.inventoryStatus}}</span>
+                    <h4 class="p-mb-1">{{slotProps.data.title}}</h4>
                   </div>
                 </div>
               </div>
@@ -442,4 +442,16 @@ export default {
   height: 16vh;
 }
 
+.product-item-content {
+  border: 1px solid var(--surface-d);
+  border-radius: 3px;
+  margin: .3rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.product-image {
+  width: 50%;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+}
 </style>

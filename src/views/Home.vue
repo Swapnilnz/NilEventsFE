@@ -121,7 +121,6 @@
                         <p style="margin: 0; text-align: center">{{slotProps.data.organizerFirstName}} {{slotProps.data.organizerLastName}}</p>
                       </div>
                     </div>
-<!--                    TODO route to event-->
                     <p-button @click="toEvent(slotProps.data.eventId)" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff);-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);">View Details</p-button>
                   </div>
                 </div>
@@ -192,7 +191,6 @@ export default {
   },
 
   methods: {
-    // TODO better images
     getImages() {
       for (let i = 0; i < 20; i++) {
         this.images.push({
