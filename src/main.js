@@ -12,12 +12,16 @@ import Dropdown from 'primevue/dropdown';
 import MultiSelect from 'primevue/multiselect';
 import DataView from 'primevue/dataview';
 import DataViewLayoutOptions from 'primevue/dataviewlayoutoptions';
+import Card from "primevue/card";
+import DataTable from "primevue/datatable";
+import Column from "primevue/column"
+import Carousel from "primevue/carousel";
 
 
 import 'primevue/resources/themes/md-light-deeppurple/theme.css';
 import 'primevue/resources/primevue.min.css';           //core css
-import 'node_modules/primeicons/primeicons.css';
-import 'node_modules/primeflex/primeflex.css';
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
 
 const app = createApp(App);
 app.use(PrimeVue, {ripple:true});
@@ -26,13 +30,17 @@ app.use(router);
 // COMPONENTS
 app.component('p-input', Input);
 app.component('p-navbar', Menubar);
-app.component('p-carousel', Galleria);
+app.component('p-galleria', Galleria);
 app.component('p-button', Button);
 app.component('p-panel', Panel);
 app.component('p-dropdown', Dropdown);
 app.component('p-multiselect', MultiSelect);
 app.component('p-dataview', DataView);
 app.component('p-dataview-layout-options', DataViewLayoutOptions);
+app.component('p-card', Card);
+app.component('p-table', DataTable);
+app.component('p-column', Column);
+app.component('p-carousel', Carousel);
 
 
 

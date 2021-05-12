@@ -4,25 +4,28 @@
     <NavbarComponent/>
 
 <!--    CAROUSEL-->
-    <p-carousel :value="images"
+    <p-galleria :value="images"
                 :responsiveOptions="responsiveOptions"
                 :showItemNavigators="false" :showThumbnails="false"
                 :autoPlay="true"
                 :transitionInterval="5000"
                 :circular="true" >
-      <template #item="slotProps">
-        <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="opacity: 60%; width: 100%; -webkit-box-shadow: 5px 5px 5px rgba(0,0,0,0.4);" />
-      </template>
-    </p-carousel>
+        <template #item="slotProps">
+          <img :src="slotProps.item.itemImageSrc" :alt="slotProps.item.alt" style="opacity: 60%; width: 100%; -webkit-box-shadow: 5px 5px 5px rgba(0,0,0,0.4);" />
+        </template>
 
-<!--    OVERLAY-->
+    </p-galleria>
+
+
+    <!--    OVERLAY-->
     <div class="overlay">
 
       <img class="logo-overlay" src="../assets/nil_events_logo_vertical.png" alt="Logo">
+
       <div class="home-searching" style="align-self: center; margin-left: 8vh; width: 70vh; text-align: center; height: 100%; margin-top: 55vh">
         <span class="p-input-icon-left">
           <i class="pi pi-search" />
-          <p-input type="text" v-model="query" class="p-inputtext-lg" placeholder="Search events..." style="border-radius: 33px; width: 70vh"/>
+          <p-input type="text" :disabled=showAdvancedSearch v-model="query" class="p-inputtext-lg" v-on:keyup.enter="searchQueryOnly" placeholder="Search events..." style="border-radius: 33px; width: 70vh"/>
         </span>
 
         <p-button class="p-button-raised p-button-rounded p-button-lg" @click="searchQueryOnly"
@@ -39,16 +42,14 @@
                   margin-top: 1vh;">
           Advanced Search
         </p-button>
-
-
       </div>
-
     </div>
 
 <!--    ADVANCED SEARCH-->
     <transition name="fade">
     <div class="advanced-search" style="width: 100%;" v-if="showAdvancedSearch">
       <div class="adv-search-title" style="
+      -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
       text-align: center;
       font-size: xxx-large;
       font-family: Roboto, Helvetica Neue Light, Helvetica Neue, Helvetica, Arial, Lucida Grande, sans-serif;
@@ -70,7 +71,7 @@
           <div class="p-col">
             <span class="p-input-icon-left">
               <i class="pi pi-search" />
-              <p-input type="text" v-model="query" placeholder="Search events..." style="border-radius: 33px; width: 50vh;-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);"/>
+              <p-input type="text" v-model="query" v-on:keyup.enter="search" placeholder="Search events..." style="border-radius: 33px; width: 50vh;-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);"/>
             </span>
           </div>
 
@@ -85,56 +86,43 @@
         </div>
       </div>
 
+<!--      EVENT DISPLAY-->
       <p-panel>
         <div class="card">
-          <p-dataview :value="data" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder" :sortField="sortField">
+          <p-dataview :value="events" :layout="layout" :paginator="true" :paginatorPosition="paginatorPosition" :rows="10" :sortOrder="sortOrder" :sortField="sortField">
             <template #header>
               <div class="p-grid p-nogutter">
                 <div class="p-col-6" style="text-align: left">
                   <p-dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Sort By" @change="onSortChange($event)"/>
                 </div>
-                <div class="p-col-6" style="text-align: right">
-                  <p-dataview-layout-options v-model="layout" />
-                </div>
               </div>
             </template>
 
-            <template #list="slotProps">
-              <div class="p-col-12">
-                <div class="product-list-item">
-                  <img src="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png" :alt="slotProps.data.title"/>
-                  <div class="product-list-detail">
-                    <div class="product-name">{{slotProps.data.title}}</div>
-                    <div class="product-description">Product description</div>
-                    <i class="pi pi-tag product-category-icon"></i><span class="product-category">Category</span>
-                  </div>
-                  <div class="product-list-action">
-                    <span class="product-price">$66</span>
-                    <p-button icon="pi pi-shopping-cart" label="Add to Cart" :disabled="false"></p-button>
-                    <span :class="'product-badge status-instock'">IN STOCK</span>
-                  </div>
-                </div>
-              </div>
-            </template>
 
             <template #grid="slotProps">
               <div class="p-col-12 p-md-4">
                 <div class="product-grid-item card">
                   <div class="product-grid-item-top">
                     <div>
-                      <i class="pi pi-tag product-category-icon"></i>
-                      <span class="product-category">Category</span>
+                      <i class="pi pi-tag icon"></i>
+                      <span class="product-category">{{this.getCategoriesFromId(slotProps.data.categories)}}</span>
                     </div>
-                    <span :class="'product-badge status-instock'">IN STOCK</span>
                   </div>
                   <div class="product-grid-item-content">
-                    <img src="https://www.primefaces.org/wp-content/uploads/2020/05/placeholder.png" :alt="slotProps.data.title"/>
-                    <div class="product-name">{{slotProps.data.title}}</div>
-                    <div class="product-description">Product description</div>
+                    <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image}`" style="max-width: 50vh; min-width: 50vh; min-height: 30vh; max-height: 30vh"/>
+                    <div class="product-name">{{slotProps.data.title}} - {{slotProps.data.dateString}}</div>
+                    <div class="num-attendees">Attendees: {{slotProps.data.numAcceptedAttendees}}/{{slotProps.data.capacity || 'Unlimited'}}</div>
                   </div>
                   <div class="product-grid-item-bottom">
-                    <span class="product-price">$55</span>
-                    <p-button icon="pi pi-shopping-cart" :disabled="false"></p-button>
+                    <div class="bottom-left" style="display: inline-flex; width: 30vh;">
+                      <img :src="`${slotProps.data.userImage}`" :alt="slotProps.data.organizerFirstName" style="width: 5vh; height: 5vh; border-radius: 50%; -webkit-box-shadow: 3px 3px 6px rgba(0,0,0,0.4);"/>
+                      <div class="product-price" style="padding-left: 2vh">
+                        <p style="font-size: 1rem;font-weight: 400;text-align: center;padding: 0;margin: 0;">Hosted by</p>
+                        <p style="margin: 0; text-align: center">{{slotProps.data.organizerFirstName}} {{slotProps.data.organizerLastName}}</p>
+                      </div>
+                    </div>
+<!--                    TODO route to event-->
+                    <p-button @click="toEvent(slotProps.data.eventId)" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff);-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);">View Details</p-button>
                   </div>
                 </div>
               </div>
@@ -157,20 +145,20 @@ export default {
   components: {NavbarComponent},
   data() {
     return {
-      query: null,
+      query: '',
       showAdvancedSearch: false,
-      data: [],
+      events: [],
       layout: 'grid',
+      paginatorPosition: "both",
       images: [],
       sortKey: null,
       sortOrder: null,
       sortField: null,
       sortOptions: [
-          // TODO categories
-        {label: 'Number of attendees (Low to High)', value: 'price'},
-        {label: 'Number of attendees (High to Low)', value: '!price'},
-        {label: 'Date (Most to Least recent)', value: 'price'},
-        {label: 'Date (Least to Most recent)', value: '!price'},
+        {label: 'Number of attendees (Low to High)', value: 'numAcceptedAttendees'},
+        {label: 'Number of attendees (High to Low)', value: '!numAcceptedAttendees'},
+        {label: 'Date (Later to Earlier)', value: '!date'},
+        {label: 'Date (Earlier to Later)', value: 'date'},
       ],
       allCategories: [],
       selectedCategories: [],
@@ -199,7 +187,8 @@ export default {
           this.allCategories = res.data;
         }).catch(err => {
       console.error(err);
-    })
+    });
+
   },
 
   methods: {
@@ -214,16 +203,25 @@ export default {
         })
       }
     },
+
+
+
     searchQueryOnly() {
+      this.showAdvancedSearch = true;
+      this.scrollTo();
       api.events.getEventsQueryOnly(this.query)
           .then(res => {
-            this.data = res.data;
-            this.showAdvancedSearch = true;
-            this.scrollTo();
+            for (let i = 0; i < res.data.length; i++) {
+              if (res.data[i].title.includes(this.query)) {
+                this.events.push(res.data[i]);
+              }
+            }
+
+            this.getEventImages();
+            this.getEventDatesAndUserImages();
           }).catch(err => {
         console.error(err);
       })
-
     },
 
     search() {
@@ -234,20 +232,82 @@ export default {
       if (this.query.length > 0) {
         api.events.getQueryAndFilteredEvents(this.query, this.selectedCategoryIds)
             .then(res => {
-              this.data = res.data;
+              this.events = res.data;
+              this.getEventImages();
+              this.getEventDatesAndUserImages();
             }).catch(err => {
           console.error(err);
         })
       } else {
         api.events.getFilteredEventsOnly(this.selectedCategoryIds)
             .then(res => {
-              this.data = res.data;
+              this.events = res.data;
+              this.getEventImages()
+              this.getEventDatesAndUserImages();
             }).catch(err => {
           console.error(err);
         })
       }
     },
 
+    getEventImages() {
+      for (let i = 0; i < this.events.length; i++) {
+        let curEvent = this.events[i];
+        curEvent.image = null;
+        api.events.getImage(curEvent.eventId)
+            .then(res => {
+
+                let reader = new window.FileReader();
+                reader.readAsDataURL(res.data);
+                reader.onload = function () {
+                  curEvent.image = reader.result;
+                }
+
+            })
+            .catch(err => {
+              console.error(err);
+            });
+      }
+    },
+
+    getEventDatesAndUserImages() {
+      for (let i = 0; i < this.events.length; i++) {
+        let curEvent = this.events[i];
+        curEvent.dateString = null;
+        curEvent.date = null;
+        curEvent.userId = null;
+        curEvent.userImage = null;
+
+        api.events.getOneEvent(curEvent.eventId)
+            .then(res => {
+              curEvent.userId = res.data.organizerId;
+              let date = '';
+              let rawDate = new Date(res.data.date);
+              curEvent.date = rawDate;
+              date += rawDate.toLocaleDateString();
+              let time = `${rawDate.getHours()}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`
+              curEvent.dateString = `${date} ${time}`;
+
+                api.users.getUserImage(curEvent.userId)
+                    .then(res => {
+                      let reader = new window.FileReader();
+                      reader.readAsDataURL(res.data);
+                      reader.onload = function () {
+                        curEvent.userImage = reader.result;
+                      }
+
+                    })
+                    .catch(err => {
+                      console.error(err);
+                      curEvent.userImage = "https://www.wallpaperup.com/template/dist/images/default/avatar.png?v=3.5.1";
+                    })
+            })
+            .catch(err => {
+              console.error(err);
+            });
+      }
+
+    },
     showAdvancedSearchMethod() {
       this.showAdvancedSearch = !this.showAdvancedSearch;
       if (this.showAdvancedSearch) {
@@ -255,12 +315,16 @@ export default {
       }
     },
 
-    scrollTo() {
-      window.scrollTo({
-        top: 1000,
-        left: 0,
-        behavior: 'smooth'
-      });
+    getCategoriesFromId(ids) {
+      let names = []
+      for (let i = 0; i < ids.length; i++) {
+        for (let j = 0; j < this.allCategories.length; j++) {
+          if (this.allCategories[j].id === ids[i]) {
+            names.push(this.allCategories[j].name)
+          }
+        }
+      }
+      return `Categories: ${names.join(', ')}`;
     },
 
     onSortChange(event){
@@ -277,6 +341,21 @@ export default {
         this.sortField = value;
         this.sortKey = sortValue;
       }
+    },
+
+    scrollTo() {
+      setTimeout(function () {
+        window.scrollTo({
+          top: 1100,
+          left: 0,
+          behavior: 'smooth'
+        });
+      }, 50);
+
+    },
+
+    toEvent(id) {
+      this.$router.push({ name: 'Event', params: {eventId: id} });
     }
   }
 
@@ -285,5 +364,7 @@ export default {
 
 <style>
 @import '../../public/styles/home.css';
+
+
 
 </style>

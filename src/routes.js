@@ -1,5 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 import Home from "@/views/Home.vue";
+import Event from "@/views/Event";
+import NotFound from "@/views/404";
 // import api from "@/api/api"
 
 const routes = [
@@ -8,6 +10,27 @@ const routes = [
         name: "Home",
         component: Home,
     },
+    {
+        path: "/events/:eventId",
+        name: "Event",
+        component: Event
+    },
+
+
+
+
+
+    {
+        path: "/404",
+        name: "notFound",
+        component: NotFound
+    },
+    // If not found redirect to 404
+    {
+        path: "/:pathMatch(.*)*",
+        redirect: { name: 'notFound' }
+    },
+
 ];
 
 const router = createRouter({

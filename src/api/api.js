@@ -3,8 +3,10 @@
  *
  * exports other api files
  */
-import events from "./events/events"
+import events from "./events"
+import users from "@/api/users";
 
 export default {
-    events: events
+    events: events,
+    users: users
 }

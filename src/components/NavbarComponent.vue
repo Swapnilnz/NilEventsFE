@@ -1,5 +1,5 @@
 <template>
-  <p-navbar :model="navbarItems" class="navbar">
+  <p-navbar :model="navbarItems" class="navbar" style="background: whitesmoke">
 
     <template #start >
       <a href="/">
