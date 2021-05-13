@@ -4,13 +4,39 @@ const getUserImage = function (id) {
     return axiosInstance
         .get(`/users/${id}/image`, {
             responseType: 'blob',
-            validateStatus:  function(status){
-                return(status === 404 || (status >= 200 && status < 300))
-            }
         })
         .then(res => res);
 };
 
+const registerUser = function (body) {
+    return axiosInstance
+        .post(`/users/register`, body)
+        .then(res => res);
+}
+
+const loginUser = function (body) {
+    return axiosInstance
+        .post(`users/login`, body)
+        .then(res => res);
+};
+
+const getUser = function (id) {
+    return axiosInstance
+        .get(`/users/${id}`)
+        .then(res => res);
+};
+
+const putUserImage = function (id, body) {
+    return axiosInstance
+        .put(`users/${id}/image`, body, {
+            headers: {'Content-Type': body.type}
+        })
+}
+
 export default {
-    getUserImage
+    getUserImage,
+    registerUser,
+    loginUser,
+    getUser,
+    putUserImage
 }

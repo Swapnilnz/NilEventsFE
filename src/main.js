@@ -16,6 +16,13 @@ import Card from "primevue/card";
 import DataTable from "primevue/datatable";
 import Column from "primevue/column"
 import Carousel from "primevue/carousel";
+import Dialog from "primevue/dialog";
+import FileUpload from "primevue/fileupload";
+import ToastService from "primevue/toastservice";
+import Toast from "primevue/toast";
+import Message from "primevue/message";
+import Password from 'primevue/password';
+import Divider from "primevue/divider";
 
 
 import 'primevue/resources/themes/md-light-deeppurple/theme.css';
@@ -26,6 +33,7 @@ import 'primeflex/primeflex.css';
 const app = createApp(App);
 app.use(PrimeVue, {ripple:true});
 app.use(router);
+app.use(ToastService);
 
 // COMPONENTS
 app.component('p-input', Input);
@@ -41,6 +49,14 @@ app.component('p-card', Card);
 app.component('p-table', DataTable);
 app.component('p-column', Column);
 app.component('p-carousel', Carousel);
+app.component('p-dialog', Dialog);
+app.component('p-file-upload', FileUpload);
+app.component('p-toast', Toast);
+app.component('p-message', Message);
+app.component('p-password', Password);
+app.component('p-divider', Divider);
+
+
 
 
 
