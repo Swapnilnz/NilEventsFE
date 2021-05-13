@@ -109,7 +109,7 @@
                     </div>
                   </div>
                   <div class="product-grid-item-content">
-                    <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image}`" style="max-width: 50vh; min-width: 50vh; min-height: 30vh; max-height: 30vh"/>
+                    <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image || 'https://thewifiexperts.co.nz/wp-content/uploads/2018/06/new_statesman_events.jpg'} `" style="max-width: 50vh; min-width: 50vh; min-height: 30vh; max-height: 30vh"/>
                     <div class="product-name">{{slotProps.data.title}} - {{slotProps.data.dateString}}</div>
                     <div class="num-attendees">Attendees: {{slotProps.data.numAcceptedAttendees}}/{{slotProps.data.capacity || 'Unlimited'}}</div>
                   </div>
@@ -254,16 +254,20 @@ export default {
         curEvent.image = null;
         api.events.getImage(curEvent.eventId)
             .then(res => {
-
+              if (res.data.size) {
                 let reader = new window.FileReader();
                 reader.readAsDataURL(res.data);
                 reader.onload = function () {
                   curEvent.image = reader.result;
                 }
+              } else {
+                curEvent.image = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
+              }
+
 
             })
             .catch(err => {
-              console.error(err);
+              console.log(err);
             });
       }
     },

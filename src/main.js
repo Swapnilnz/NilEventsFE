@@ -23,6 +23,11 @@ import Toast from "primevue/toast";
 import Message from "primevue/message";
 import Password from 'primevue/password';
 import Divider from "primevue/divider";
+import InputNumber from 'primevue/inputnumber';
+import Checkbox from 'primevue/checkbox';
+import Calendar from 'primevue/calendar';
+
+
 
 
 import 'primevue/resources/themes/md-light-deeppurple/theme.css';
@@ -55,9 +60,9 @@ app.component('p-toast', Toast);
 app.component('p-message', Message);
 app.component('p-password', Password);
 app.component('p-divider', Divider);
-
-
-
+app.component('p-number', InputNumber);
+app.component('p-checkbox', Checkbox);
+app.component('p-calender', Calendar);
 
 
 app.mount('#app')

@@ -177,7 +177,7 @@
                     </template>
                     <template #content>
                         <div class="sim-card" style="padding: 1vh">
-                            <p-carousel :autoplayInterval="3000" :indicatorsContentClass="null" :numScroll="5" :numVisible="5"
+                            <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="3" :numVisible="3"
                                         :value="similarEvents" class="carousel" orientation="vertical"
                                         verticalViewPortHeight="60vh">
 
@@ -322,16 +322,19 @@ export default {
             let id = (curEventInfo.eventId) ? curEventInfo.eventId : curEventInfo.id;
             api.events.getImage(id)
                 .then(res => {
-
+                  if (res.data.size) {
                     let reader = new window.FileReader();
                     reader.readAsDataURL(res.data);
                     reader.onload = function () {
-                        curEventInfo.eventImage = reader.result;
+                      curEventInfo.eventImage = reader.result;
                     }
+                  } else {
+                    curEventInfo.eventImage = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
+                  }
+
                 })
                 .catch(err => {
                     console.error(err);
-                    curEventInfo.eventImage = 'https://t3.ftcdn.net/jpg/02/35/35/38/360_F_235353859_bnOvXsJfJoDBbGXJYO2soMTlJaOBaom2.jpg';
                 });
         },
 
@@ -413,7 +416,7 @@ export default {
 }
 
 .img-card >>> .p-card-footer {
-    background: #7b30aa;
+  background: #830caa;
     border-bottom-left-radius: 30px;
     border-bottom-right-radius: 30px;
     min-height: 5vh;
@@ -435,7 +438,7 @@ export default {
 }
 
 .info-card >>> .p-card-header {
-    background: #033c92;
+  background: #830caa;
     min-height: 5vh;
     color: white;
     border-top-left-radius: 30px;
@@ -448,7 +451,7 @@ export default {
 }
 
 .user-img-card >>> .p-card-header {
-    background: #000000;
+  background: #830caa;
     min-height: 5vh;
     color: white;
     border-top-left-radius: 30px;
@@ -470,7 +473,7 @@ export default {
 }
 
 .all-attendees-card >>> .p-card-header {
-    background: #167403;
+  background: #830caa;
     min-height: 5vh;
     color: white;
     border-top-left-radius: 30px;
@@ -499,7 +502,7 @@ export default {
 }
 
 .similar-events-card >>> .p-card-header {
-    background: #800404;
+  background: #830caa;
     min-height: 5vh;
     color: white;
     border-top-left-radius: 30px;

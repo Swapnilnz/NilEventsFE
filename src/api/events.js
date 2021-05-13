@@ -66,6 +66,18 @@ const getEventAttendees = function (id) {
         .then(res => res);
 }
 
+const postEvent = function (payload) {
+    return axiosInstance.post(`/events`, payload,{
+        headers: {'X-Authorization': localStorage.getItem('token')}
+    }).then(res => res);
+}
+
+const putEventImage = function (id, body) {
+    return axiosInstance
+        .put(`events/${id}/image`, body, {
+            headers: {'Content-Type': body.type}
+        })
+}
 
 export default {
     getEventsQueryOnly,
@@ -74,5 +86,7 @@ export default {
     getFilteredEventsOnly,
     getImage,
     getOneEvent,
-    getEventAttendees
+    getEventAttendees,
+    postEvent,
+    putEventImage
 }
