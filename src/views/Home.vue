@@ -85,50 +85,8 @@
           </div>
         </div>
       </div>
+    <EventSearchResults v-if="showSearchResults" :events="events" />
 
-<!--      EVENT DISPLAY-->
-      <p-panel>
-        <div class="card">
-          <p-dataview :value="events" :layout="layout" :paginator="true" :paginatorPosition="paginatorPosition" :rows="10" :sortOrder="sortOrder" :sortField="sortField">
-            <template #header>
-              <div class="p-grid p-nogutter">
-                <div class="p-col-6" style="text-align: left">
-                  <p-dropdown v-model="sortKey" :options="sortOptions" optionLabel="label" placeholder="Sort By" @change="onSortChange($event)"/>
-                </div>
-              </div>
-            </template>
-
-
-            <template #grid="slotProps">
-              <div class="p-col-12 p-md-4">
-                <div class="product-grid-item card">
-                  <div class="product-grid-item-top">
-                    <div>
-                      <i class="pi pi-tag icon"></i>
-                      <span class="product-category">{{this.getCategoriesFromId(slotProps.data.categories)}}</span>
-                    </div>
-                  </div>
-                  <div class="product-grid-item-content">
-                    <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image || 'https://thewifiexperts.co.nz/wp-content/uploads/2018/06/new_statesman_events.jpg'} `" style="max-width: 50vh; min-width: 50vh; min-height: 30vh; max-height: 30vh"/>
-                    <div class="product-name">{{slotProps.data.title}} - {{slotProps.data.dateString}}</div>
-                    <div class="num-attendees">Attendees: {{slotProps.data.numAcceptedAttendees}}/{{slotProps.data.capacity || 'Unlimited'}}</div>
-                  </div>
-                  <div class="product-grid-item-bottom">
-                    <div class="bottom-left" style="display: inline-flex; width: 30vh;">
-                      <img :src="`${slotProps.data.userImage}`" :alt="slotProps.data.organizerFirstName" style="width: 5vh; height: 5vh; border-radius: 50%; -webkit-box-shadow: 3px 3px 6px rgba(0,0,0,0.4);"/>
-                      <div class="product-price" style="padding-left: 2vh">
-                        <p style="font-size: 1rem;font-weight: 400;text-align: center;padding: 0;margin: 0;">Hosted by</p>
-                        <p style="margin: 0; text-align: center">{{slotProps.data.organizerFirstName}} {{slotProps.data.organizerLastName}}</p>
-                      </div>
-                    </div>
-                    <p-button @click="toEvent(slotProps.data.eventId)" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff);-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);">View Details</p-button>
-                  </div>
-                </div>
-              </div>
-            </template>
-          </p-dataview>
-        </div>
-      </p-panel>
     </div>
     </transition>
 
@@ -138,10 +96,11 @@
 <script>
 import NavbarComponent from "@/components/NavbarComponent";
 import api from "@/api/api";
+import EventSearchResults from "@/components/EventSearchResults";
 
 export default {
   name: "Home",
-  components: {NavbarComponent},
+  components: {EventSearchResults, NavbarComponent},
   data() {
     return {
       query: '',
@@ -175,7 +134,8 @@ export default {
           breakpoint: '560px',
           numVisible: 1
         }
-      ]
+      ],
+      showSearchResults: false
     }
   },
 
@@ -202,21 +162,19 @@ export default {
       }
     },
 
-
-
     searchQueryOnly() {
       this.showAdvancedSearch = true;
       this.scrollTo();
       api.events.getEventsQueryOnly(this.query)
           .then(res => {
+            this.events = [];
             for (let i = 0; i < res.data.length; i++) {
-              if (res.data[i].title.includes(this.query)) {
+              if (res.data[i].title.toLowerCase().includes(this.query.toLowerCase())) {
                 this.events.push(res.data[i]);
               }
             }
+            this.showSearchResults = true;
 
-            this.getEventImages();
-            this.getEventDatesAndUserImages();
           }).catch(err => {
         console.error(err);
       })
@@ -230,86 +188,35 @@ export default {
       if (this.query.length > 0) {
         api.events.getQueryAndFilteredEvents(this.query, this.selectedCategoryIds)
             .then(res => {
-              this.events = res.data;
-              this.getEventImages();
-              this.getEventDatesAndUserImages();
+              this.events = [];
+
+              for (let i = 0; i < res.data.length; i++) {
+                if (res.data[i].title.toLowerCase().includes(this.query.toLowerCase())) {
+                  this.events.push(res.data[i]);
+                }
+              }
+              this.showSearchResults = true;
+
             }).catch(err => {
           console.error(err);
         })
       } else {
         api.events.getFilteredEventsOnly(this.selectedCategoryIds)
             .then(res => {
-              this.events = res.data;
-              this.getEventImages()
-              this.getEventDatesAndUserImages();
+              this.events = [];
+
+              for (let i = 0; i < res.data.length; i++) {
+                if (res.data[i].title.toLowerCase().includes(this.query.toLowerCase())) {
+                  this.events.push(res.data[i]);
+                }
+              }
+              this.showSearchResults = true;
             }).catch(err => {
           console.error(err);
         })
       }
     },
 
-    getEventImages() {
-      for (let i = 0; i < this.events.length; i++) {
-        let curEvent = this.events[i];
-        curEvent.image = null;
-        api.events.getImage(curEvent.eventId)
-            .then(res => {
-              if (res.data.size) {
-                let reader = new window.FileReader();
-                reader.readAsDataURL(res.data);
-                reader.onload = function () {
-                  curEvent.image = reader.result;
-                }
-              } else {
-                curEvent.image = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
-              }
-
-
-            })
-            .catch(err => {
-              console.log(err);
-            });
-      }
-    },
-
-    getEventDatesAndUserImages() {
-      for (let i = 0; i < this.events.length; i++) {
-        let curEvent = this.events[i];
-        curEvent.dateString = null;
-        curEvent.date = null;
-        curEvent.userId = null;
-        curEvent.userImage = null;
-
-        api.events.getOneEvent(curEvent.eventId)
-            .then(res => {
-              curEvent.userId = res.data.organizerId;
-              let date = '';
-              let rawDate = new Date(res.data.date);
-              curEvent.date = rawDate;
-              date += rawDate.toLocaleDateString();
-              let time = `${rawDate.getHours()}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`
-              curEvent.dateString = `${date} ${time}`;
-
-                api.users.getUserImage(curEvent.userId)
-                    .then(res => {
-                      let reader = new window.FileReader();
-                      reader.readAsDataURL(res.data);
-                      reader.onload = function () {
-                        curEvent.userImage = reader.result;
-                      }
-
-                    })
-                    .catch(err => {
-                      console.error(err);
-                      curEvent.userImage = "https://www.wallpaperup.com/template/dist/images/default/avatar.png?v=3.5.1";
-                    })
-            })
-            .catch(err => {
-              console.error(err);
-            });
-      }
-
-    },
     showAdvancedSearchMethod() {
       this.showAdvancedSearch = !this.showAdvancedSearch;
       if (this.showAdvancedSearch) {
@@ -317,33 +224,6 @@ export default {
       }
     },
 
-    getCategoriesFromId(ids) {
-      let names = []
-      for (let i = 0; i < ids.length; i++) {
-        for (let j = 0; j < this.allCategories.length; j++) {
-          if (this.allCategories[j].id === ids[i]) {
-            names.push(this.allCategories[j].name)
-          }
-        }
-      }
-      return `Categories: ${names.join(', ')}`;
-    },
-
-    onSortChange(event){
-      const value = event.value.value;
-      const sortValue = event.value;
-
-      if (value.indexOf('!') === 0) {
-        this.sortOrder = -1;
-        this.sortField = value.substring(1, value.length);
-        this.sortKey = sortValue;
-      }
-      else {
-        this.sortOrder = 1;
-        this.sortField = value;
-        this.sortKey = sortValue;
-      }
-    },
 
     scrollTo() {
       setTimeout(function () {
@@ -356,9 +236,6 @@ export default {
 
     },
 
-    toEvent(id) {
-      this.$router.push({ name: 'Event', params: {eventId: id} });
-    }
   }
 
 }

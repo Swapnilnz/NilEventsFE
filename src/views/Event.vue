@@ -373,17 +373,7 @@ export default {
 
         },
 
-        getCategoriesFromId(ids) {
-            let names = []
-            for (let i = 0; i < ids.length; i++) {
-                for (let j = 0; j < this.allCategories.length; j++) {
-                    if (this.allCategories[j].id === ids[i]) {
-                        names.push(this.allCategories[j].name)
-                    }
-                }
-            }
-            return `Categories: ${names.join(', ')}`;
-        },
+
 
     }
 }
