@@ -183,10 +183,10 @@
 
                                 <template #item="slotProps">
                                     <div class="product-item">
-                                        <div class="product-item-content">
+                                        <div class="product-item-content" >
                                             <div class="p-mb-3">
                                                 <img :alt="slotProps.data.title" :src="`${slotProps.data.eventImage}`"
-                                                     class="product-image"/>
+                                                     class="product-image" style="max-height: 10vh"/>
                                             </div>
                                             <div>
                                                 <h4 class="p-mb-1">{{ slotProps.data.title }}</h4>
