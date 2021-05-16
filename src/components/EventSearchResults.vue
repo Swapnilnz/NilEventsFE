@@ -52,7 +52,7 @@ import api from "@/api/api";
 
 export default {
   name: "EventSearchResults",
-  props: ['events', 'fromSearch'],
+  props: ['events'],
 
   data() {
     return {
@@ -69,6 +69,7 @@ export default {
         {label: 'Date (Later to Earlier)', value: '!date'},
         {label: 'Date (Earlier to Later)', value: 'date'},
       ],
+
     }
   },
 
@@ -81,9 +82,20 @@ export default {
     });
     this.getEventImages();
     this.getEventDatesAndUserImages()
+
+  },
+
+  watch: {
+    events: function () {
+      this.getEventImages();
+      this.getEventDatesAndUserImages()
+    }
+
   },
 
   methods: {
+
+
     getCategoriesFromId(ids) {
       let names = []
       for (let i = 0; i < ids.length; i++) {
@@ -127,8 +139,6 @@ export default {
             } else {
               curEvent.image = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
             }
-
-
           })
           .catch(err => {
             console.log(err);
@@ -174,6 +184,8 @@ export default {
       }
 
     },
+
+
 
     toEvent(id) {
       this.$router.push({ name: 'Event', params: {eventId: id} });

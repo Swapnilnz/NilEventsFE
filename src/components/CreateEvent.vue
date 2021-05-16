@@ -225,14 +225,6 @@ export default {
     },
 
 
-
-    showLoginError() {
-      this.showLoginErrorMsg = true;
-      setTimeout(() => {
-        this.showLoginErrorMsg = false;
-      }, 5000);
-    },
-
     createEvent() {
 
       if (this.selectedType === null) {
@@ -304,6 +296,8 @@ export default {
     },
 
     showEventCreateSuccess() {
+      window.location.reload();
+
       this.$toast.add({
         severity: 'success',
         summary: 'Success Message',

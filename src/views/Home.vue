@@ -85,7 +85,7 @@
           </div>
         </div>
       </div>
-    <EventSearchResults v-if="showSearchResults" :events="events" />
+    <EventSearchResults  :events="events" />
 
     </div>
     </transition>
@@ -135,7 +135,6 @@ export default {
           numVisible: 1
         }
       ],
-      showSearchResults: false
     }
   },
 
@@ -173,7 +172,6 @@ export default {
                 this.events.push(res.data[i]);
               }
             }
-            this.showSearchResults = true;
 
           }).catch(err => {
         console.error(err);
@@ -195,7 +193,6 @@ export default {
                   this.events.push(res.data[i]);
                 }
               }
-              this.showSearchResults = true;
 
             }).catch(err => {
           console.error(err);
@@ -210,7 +207,6 @@ export default {
                   this.events.push(res.data[i]);
                 }
               }
-              this.showSearchResults = true;
             }).catch(err => {
           console.error(err);
         })

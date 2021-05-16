@@ -33,10 +33,24 @@ const putUserImage = function (id, body) {
         })
 }
 
+const deleteUserImage = function (id) {
+    return axiosInstance
+        .delete(`/users/${id}/image`)
+        .then(res => res)
+}
+
+const updateUser = function (id, payload) {
+    return axiosInstance
+        .patch(`/users/${id}`, payload)
+        .then(res => res);
+}
+
 export default {
     getUserImage,
     registerUser,
     loginUser,
     getUser,
-    putUserImage
+    putUserImage,
+    deleteUserImage,
+    updateUser
 }

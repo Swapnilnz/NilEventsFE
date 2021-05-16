@@ -79,6 +79,12 @@ const putEventImage = function (id, body) {
         })
 }
 
+const deleteEvent = function(id) {
+    return axiosInstance
+        .delete(`events/${id}`)
+        .then(res => res)
+}
+
 export default {
     getEventsQueryOnly,
     getAllCategories,
@@ -88,5 +94,6 @@ export default {
     getOneEvent,
     getEventAttendees,
     postEvent,
-    putEventImage
+    putEventImage,
+    deleteEvent
 }

@@ -128,7 +128,7 @@
                 </div>
                 <div style="text-align: center">
                   <small v-if="invalidPassword" id="password-help" class="p-error">Password must be at least 8
-                    characters.</small>
+                    characters</small>
                 </div>
                 <br>
 
@@ -229,12 +229,19 @@
 
           <div class="profile-btn" style="padding: 1vh;">
             <p-button class="p-button-raised p-button-rounded p-button-lg"
-                      style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content ">
+                      style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content " @click="openUserProfile">
               <i class="pi pi-user icon"></i>
               Profile
             </p-button>
 
           </div>
+
+          <p-dialog v-model:visible="displayUserProfile" :closable="false" :modal="true" :showHeader="false"
+                    :style="{width: '30vw'}"
+                    contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
+            <UserProfile :close-user-profile="closeUserProfile" :navbar-image="updateImage"></UserProfile>
+          </p-dialog>
+
           <div class="logout-btn" style="padding: 1vh;">
             <p-button class="p-button-raised p-button-rounded p-button-lg" style="color: gray; background: white; width: max-content "
                       @click="route('Home')">
@@ -263,12 +270,13 @@
 <script>
 import api from "@/api/api";
 import CreateEvent from "@/components/CreateEvent";
+import UserProfile from "@/components/UserProfile";
 
 const emailRegEx = /.+@.+\..+/;
 
 export default {
   name: "NavbarComponent",
-  components: {CreateEvent},
+  components: {UserProfile, CreateEvent},
   data() {
     return {
       navbarItems: [],
@@ -302,9 +310,8 @@ export default {
       loggedUserLastName: '',
       loggedImage: null,
 
-      displayCreateEvent: false
-
-
+      displayCreateEvent: false,
+      displayUserProfile: false
 
     }
   },
@@ -378,6 +385,14 @@ export default {
       this.displayCreateEvent = false;
     },
 
+    openUserProfile() {
+      this.displayUserProfile = true;
+    },
+
+    closeUserProfile() {
+      this.displayUserProfile = false;
+    },
+
 
     myUploader(event) {
       this.image = event.files[0];
@@ -386,7 +401,7 @@ export default {
 
 
     register() {
-      if (!this.invalidEmail && !this.invalidPassword) {
+      if (!this.invalidEmail && !this.invalidPassword && this.firstName.length > 0 && this.lastName.length > 0) {
         let payload = {
           firstName: this.firstName,
           lastName: this.lastName,
@@ -419,7 +434,7 @@ export default {
           this.loginEmail = null;
           this.loginPass = null;
           this.isLogged = false;
-          // this.$router.push({name: 'Home'});
+          this.$router.push({name: 'Home'});
           break;
 
         case 'Profile':
@@ -467,6 +482,13 @@ export default {
       })
     },
 
+    showLoginError() {
+      this.showLoginErrorMsg = true;
+      setTimeout(() => {
+        this.showLoginErrorMsg = false;
+      }, 5000);
+    },
+
     showRegisterSuccess() {
       this.$toast.add({
         severity: 'success',
@@ -476,6 +498,10 @@ export default {
         life: 3000
       });
     },
+
+    updateImage(newImage) {
+      this.navbarInfo.image = newImage;
+    }
 
   }
 }
