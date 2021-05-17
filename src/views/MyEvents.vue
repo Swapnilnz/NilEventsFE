@@ -88,7 +88,7 @@
       </p-table>
 <!--      EDIT MODAL-->
       <p-dialog v-model:visible="displayUpdateEvent" :closable="true" :modal="true" :showHeader="false"
-                :style="{width: '30vw'}"
+                :style="{width: '30vw', maxHeight:'99%'}"
                 contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
         <CreateEvent :close-create-event="closeUpdateEvent" :update="true" :init-data="updateEventInitData"></CreateEvent>
       </p-dialog>
@@ -375,5 +375,4 @@ export default {
   background-color: #ffd8b2;
   color: #805b36;
 }
-
 </style>
