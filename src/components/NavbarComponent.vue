@@ -203,7 +203,7 @@
                 <span class="p-input-icon-left" style="border-radius: 10px; width: 75%">
                   <i class="pi pi-unlock"/>
                   <p-password v-model="loginPass" :feedback="false" class="password" placeholder="********" strongRegex
-                              style="border-radius: 20px; width: 100%" toggleMask/>
+                              style="border-radius: 20px; width: 100%" toggleMask v-on:keyup.enter="login(loginEmail, loginPass, null)"/>
                 </span>
                 </div>
                 <br>
@@ -351,6 +351,7 @@ export default {
                 navbarInfo.image = reader.result;
               }
               this.isLogged = true;
+              window.location.reload()
             }).catch(err => {
             console.log(err);
             navbarInfo.image = 'https://www.wallpaperup.com/template/dist/images/default/avatar.png?v=3.5.1';
@@ -426,17 +427,18 @@ export default {
     },
 
     route(route) {
-      console.log(route);
       switch (route) {
         case 'Home':
-          localStorage.setItem('id', null);
-          localStorage.setItem('token', null);
-          this.loginEmail = null;
-          this.loginPass = null;
-          this.isLogged = false;
-          this.$router.push({name: 'Home'});
+          api.users.logoutUser()
+            .then(() => {
+              localStorage.setItem('id', null);
+              localStorage.setItem('token', null);
+              this.loginEmail = null;
+              this.loginPass = null;
+              this.isLogged = false;
+              this.$router.push({name: 'Home'});
+            });
           break;
-
         case 'Profile':
           this.$router.push({name: 'Profile'});
           break;

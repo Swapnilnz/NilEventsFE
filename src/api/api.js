@@ -5,8 +5,10 @@
  */
 import events from "./events"
 import users from "@/api/users";
+import attendance from "@/api/attendance";
 
 export default {
     events: events,
-    users: users
+    users: users,
+    attendance
 }

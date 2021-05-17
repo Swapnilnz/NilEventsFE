@@ -45,6 +45,12 @@ const updateUser = function (id, payload) {
         .then(res => res);
 }
 
+const logoutUser = function() {
+    return axiosInstance
+        .post(`/users/logout`)
+        .then(res => res);
+}
+
 export default {
     getUserImage,
     registerUser,
@@ -52,5 +58,6 @@ export default {
     getUser,
     putUserImage,
     deleteUserImage,
-    updateUser
+    updateUser,
+    logoutUser
 }

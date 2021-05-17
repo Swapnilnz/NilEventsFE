@@ -11,7 +11,7 @@
     </div>
     <br>
     <div>
-      <p-table :value="hostedEvents" v-model:expandedRows="expandedRows" dataKey="id" responsiveLayout="scroll" >
+      <p-table :value="hostedEvents" dataKey="id" responsiveLayout="scroll" removableSort>
 
         <p-column field="title" header="Title" sortable></p-column>
 
@@ -23,8 +23,50 @@
         <p-column field="dateString" header="Date" sortable></p-column>
         <p-column field="fee" header="Fee ($)" sortable></p-column>
         <p-column field="attendees" header="Attendees">
-          <template #body>
-            <p-button icon="pi pi-user" label="Attendees" style="background: #1ecb00"/>
+          <template #body="slotProps">
+            <p-button icon="pi pi-user" label="Attendees" style="background: #1ecb00" @click="displayAttendeeDialog=true"/>
+            <p-dialog v-model:visible="displayAttendeeDialog" :closable="false" :modal="true" :showHeader="false"
+                      :style="{width: '40vw'}"
+                      contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
+
+              <div class="attendee-dialog" style="max-height: 80vh">
+                <div class="dialog-header"
+                     style="background: whitesmoke; padding: 2vh; font-size: xx-large; text-align: center">
+                  Event Attendees
+                </div>
+
+                  <p-table :value="slotProps.data.attendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1">
+
+                    <p-column field="firstName" header="First name" sortable></p-column>
+                    <p-column field="lastName" header="Last name" sortable></p-column>
+                    <p-column field="dateOfInterest" header="Date of Interest" sortable>
+                      <template #body="{data}">
+                        {{getDateString(data.dateOfInterest)}}
+                      </template>
+                    </p-column>
+
+                    <p-column field="status" header="Status" sortable>
+                      <template #body="{data}">
+                        <span :class="'customer-badge status-' + getStatus(data.status)"><strong>{{data.status}}</strong></span>
+                      </template>
+                    </p-column>
+
+                    <p-column field="changeStatus" header="Change Status">
+                      <template #body="{data}">
+                        <p-dropdown v-model="attendanceKey" :options="attendanceOptions" @change="onAttendanceChange(slotProps, data, $event)" placeholder="Accept/Reject" />
+
+                      </template>
+                    </p-column>
+
+                  </p-table>
+                <div style="display: flex; justify-content:center; padding: 1vh;">
+                  <p-button style="border-radius: 10px" autofocus class="p-button-text" icon="pi pi-arrow-left" label="Exit" @click="closeAttendeesDialog"/>
+                </div>
+
+              </div>
+
+
+            </p-dialog>
           </template>
         </p-column>
         <p-column field="edit" header="Edit">
@@ -70,7 +112,9 @@ export default {
       hostedEvents: [],
       userId: null,
       loadingComplete: false,
-      expandedRows: [],
+      displayAttendeeDialog: false,
+      attendanceOptions: ['Accepted', 'Rejected', 'Pending'],
+      attendanceKey: ""
     }
   },
 
@@ -94,11 +138,10 @@ export default {
             api.events.getOneEvent(curEventId)
             .then(res => {
               let eventData = res.data;
-              let date = '';
-              let rawDate = new Date(eventData.date);
-              date += rawDate.toLocaleDateString();
-              let time = `${rawDate.getHours()}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`
-              eventData.dateString = `${date} ${time}`;
+              if (eventData.capacity === null) { eventData.capacity = 'Unlimited'}
+              if (eventData.attendeeCount === null) { eventData.attendeeCount = 0}
+
+              eventData.dateString = this.getDateString(eventData.date);
               if (eventData.organizerId === this.userId) {
                 api.events.getEventAttendees(curEventId)
                 .then(res => {
@@ -221,6 +264,63 @@ export default {
       })
     },
 
+    getStatus(status) {
+      switch (status) {
+        case 'accepted':
+          return 'qualified';
+        case 'pending':
+          return 'proposal';
+        case 'rejected':
+          return 'unqualified';
+      }
+    },
+
+    onAttendanceChange(eventData, attendeeInfo, event) {
+
+      let eventId = eventData.data.id;
+      let attendeeId = attendeeInfo.attendeeId;
+      let newStatus = event.value.toLowerCase();
+
+      api.attendance.updateAttendance(eventId, attendeeId, newStatus)
+      .then(() => {
+        for (let i = 0; i < this.hostedEvents.length; i++ ) {
+          for (let j = 0; j < this.hostedEvents[i].attendees.length; j++) {
+            if (this.hostedEvents[i].attendees[j].attendeeId === attendeeId) {
+              this.hostedEvents[i].attendees[j].status = event.value.toLowerCase();
+            }
+          }
+        }
+      }).catch(err => {
+        console.log(err);
+      })
+
+    },
+
+    getDateString(date) {
+      String.prototype.paddingLeft = function (paddingValue) {
+        return String(paddingValue + this).slice(-paddingValue.length);
+      };
+
+      String.prototype.format = function () {
+        let args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, number) {
+          return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+      };
+
+      let newDate = '';
+      let rawDate = new Date(date);
+      newDate += rawDate.toLocaleDateString();
+      let hours = rawDate.getHours().toString().paddingLeft("00");
+      let minutes = rawDate.getMinutes().toString().paddingLeft("00");
+      let time = "{0}:{1}".format(hours, minutes)
+      newDate = `${newDate} ${time}`;
+      return newDate;
+    },
+
+    closeAttendeesDialog() {
+      this.displayAttendeeDialog = false;
+    }
 
 
   }
@@ -230,5 +330,26 @@ export default {
 </script>
 
 <style scoped>
+.customer-badge {
+  border-radius: 2px;
+  padding: .25em .5rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: .3px;
+}
+.customer-badge.status-qualified {
+  background-color: #c8e6c9;
+  color: #256029;
+}
+.customer-badge.status-unqualified {
+  background-color: #ffcdd2;
+  color: #c63737;
+}
+
+.customer-badge.status-proposal {
+  background-color: #ffd8b2;
+  color: #805b36;
+}
 
 </style>
