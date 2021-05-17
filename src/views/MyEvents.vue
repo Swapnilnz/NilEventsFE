@@ -20,8 +20,11 @@
         <template #body="slotProps">
           {{slotProps.data.capacity || 'Unlimited'}}
         </template>
+
         <p-column field="dateString" header="Date" sortable></p-column>
+
         <p-column field="fee" header="Fee ($)" sortable></p-column>
+
         <p-column field="attendees" header="Attendees">
           <template #body="slotProps">
             <p-button icon="pi pi-user" label="Attendees" style="background: #1ecb00" @click="displayAttendeeDialog=true"/>
@@ -69,18 +72,26 @@
             </p-dialog>
           </template>
         </p-column>
+
         <p-column field="edit" header="Edit">
           <template #body="slotProps">
-<!--            TODO-->
-            <p-button icon="pi pi-pencil" style="background: #8bc7ee" :disabled="inPast(slotProps.data.date)" @click="showEdit(slotProps.data.id)"/>
+            <p-button icon="pi pi-pencil" style="background: #8bc7ee" :disabled="inPast(slotProps)" @click="showEdit(slotProps.data)"/>
+
           </template>
         </p-column>
+
         <p-column field="delete" header="Delete">
           <template #body="slotProps">
             <p-button icon="pi pi-times" style="background: #cb0000" :disabled="inPast(slotProps.data.date)" @click="deleteEvent(slotProps.data.id)"/>
           </template>
         </p-column>
       </p-table>
+<!--      EDIT MODAL-->
+      <p-dialog v-model:visible="displayUpdateEvent" :closable="true" :modal="true" :showHeader="false"
+                :style="{width: '30vw'}"
+                contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
+        <CreateEvent :close-create-event="closeUpdateEvent" :update="true" :init-data="updateEventInitData"></CreateEvent>
+      </p-dialog>
     </div>
 
     <br>
@@ -101,9 +112,10 @@
 import NavbarComponent from "@/components/NavbarComponent";
 import api from "@/api/api";
 import EventSearchResults from "@/components/EventSearchResults";
+import CreateEvent from "@/components/CreateEvent";
 export default {
   name: "MyEvents",
-  components: {EventSearchResults, NavbarComponent},
+  components: {CreateEvent, EventSearchResults, NavbarComponent},
 
   data() {
     return {
@@ -114,7 +126,9 @@ export default {
       loadingComplete: false,
       displayAttendeeDialog: false,
       attendanceOptions: ['Accepted', 'Rejected', 'Pending'],
-      attendanceKey: ""
+      attendanceKey: "",
+      displayUpdateEvent: false,
+      updateEventInitData: null,
     }
   },
 
@@ -320,6 +334,16 @@ export default {
 
     closeAttendeesDialog() {
       this.displayAttendeeDialog = false;
+    },
+
+    showEdit(initData) {
+      this.updateEventInitData = {...initData};
+      console.log(this.updateEventInitData);
+      this.displayUpdateEvent = true;
+    },
+
+    closeUpdateEvent() {
+      this.displayUpdateEvent = false;
     }
 
 

@@ -5,7 +5,7 @@
       <div class="signup-dialogue">
         <div class="dialog-header"
              style="background: whitesmoke; padding: 2vh; font-size: xx-large; text-align: center">
-          Create Event
+          {{ update ? 'Update Event' : 'Create Event' }}
         </div>
         <div class="dialog-body" style="padding: 2vh">
 
@@ -14,7 +14,7 @@
           </div>
           <div class="email" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-input id="title" v-model="eventTitle" placeholder="e.g. 'My 21st'" style="border-radius: 20px; width: 100%"
+                    <p-input v-model="eventTitle" placeholder="e.g. 'My 21st'" style="border-radius: 20px; width: 100%"
                              type="text"/>
                   </span>
           </div>
@@ -37,7 +37,7 @@
           </div>
           <div class="email" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-input id="title" v-model="eventDescription" placeholder="e.g. 'A night of fun stuff'" style="border-radius: 20px; width: 100%;"
+                    <p-input v-model="eventDescription" placeholder="e.g. 'A night of fun stuff'" style="border-radius: 20px; width: 100%;"
                              type="text"/>
                   </span>
           </div>
@@ -56,11 +56,11 @@
           <div class="capacity-is-online" style="display: inline-flex; width: 100%; justify-content: space-evenly">
 
 
-            <div class="capacity" style="text-align: center;width: 45%; display: inline-flex; justify-content: center">
+            <div class="capacity" style="text-align: center;width: 45%; display: inline-flex;">
               <p-number v-model="eventCapacity" style="width: 13vh" placeholder="Blank for no capacity"></p-number>
             </div>
             <div class="is-online" style="text-align: center; width: 45%">
-              <p-dropdown v-model="selectedType" :options="eventTypes" placeholder="Select a Type" />
+              <p-dropdown v-model="selectedType" :options="eventTypes" placeholder="Select a Type" @change="onEventTypeChange($event)"/>
             </div>
 
           </div>
@@ -76,7 +76,7 @@
           </div>
           <div class="isOnline" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-input id="isOnline" v-model="eventURL" placeholder="e.g. 'http://stackoverflow.com/'" style="border-radius: 20px; width: 100%;"
+                    <p-input v-model="eventURL" placeholder="e.g. 'http://stackoverflow.com/'" style="border-radius: 20px; width: 100%;"
                              type="text"/>
                   </span>
           </div>
@@ -90,7 +90,7 @@
           <transition name="slide-fade">
             <div class="venue" style="text-align: center;" v-if="selectedType === 'In-Person'">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-input id="venue" v-model="eventVenue" placeholder="e.g. '221b Baker Street'" style="border-radius: 20px; width: 100%;"
+                    <p-input v-model="eventVenue" placeholder="e.g. '221b Baker Street'" style="border-radius: 20px; width: 100%;"
                              type="text"/>
                   </span>
             </div>
@@ -123,7 +123,7 @@
 
             <div class="price" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-number id="currency-us" v-model="eventFee" mode="currency" currency="USD" locale="en-US" />
+                    <p-number v-model="eventFee" mode="currency" currency="USD" locale="en-US" />
                   </span>
             </div>
           </div>
@@ -149,9 +149,14 @@
             <p-message severity="error"> {{eventErrorMessage}}</p-message>
           </div>
           <br>
-          <div style="display: flex; justify-content: space-between;">
+          <div v-if="!update" style="display: flex; justify-content: space-between;">
             <p-button class="p-button-text" icon="pi pi-times" label="Cancel" @click="myCloseCreateEvent"/>
             <p-button label="Create Event" icon="pi pi-check" @click="createEvent" autofocus/>
+          </div>
+
+          <div v-if="update" style="display: flex; justify-content: space-between;">
+            <p-button class="p-button-text" icon="pi pi-times" label="Cancel" @click="myCloseCreateEvent"/>
+<!--            <p-button label="Create Event" icon="pi pi-check" @click="updateEvent" autofocus/>-->
           </div>
         </div>
 
@@ -165,10 +170,11 @@ import api from "@/api/api";
 
 export default {
   name: "CreateEvent",
-  props: ['closeCreateEvent'],
+  props: ['closeCreateEvent', 'update', 'initData'],
 
   data () {
     return {
+      data: {},
       // CREATE EVENT
       // displayCreateEvent: false,
       allCategories: [],
@@ -197,22 +203,37 @@ export default {
     api.events.getAllCategories()
       .then(res => {
         this.allCategories = res.data;
+        if (this.update) {
+          for (let i = 0; i < this.initData.categories.length; i++ ) {
+            for (let j = 0; j < this.allCategories.length; j++) {
+              if (this.initData.categories[i] === this.allCategories[j].id) {
+
+                this.selectedCategories.push(this.allCategories[j]);
+              }
+            }
+          }
+        }
       }).catch(err => {
       console.error(err);
     });
-  },
 
-  watch: {
-
-    selectedType: function(newType) {
-      if (newType === 'Online') {
-        this.eventIsOnline = true
-      } else if (newType === 'In-Person') {
-        this.eventIsOnline = false;
+    if (this.update) {
+      // set init data
+      this.eventTitle = this.initData.title;
+      this.eventDescription = this.initData.description;
+      this.eventCapacity = (this.initData.capacity === "Unlimited") ? null : this.initData.capacity;
+      this.selectedType = this.initData.isOnline ? 'Online': 'In-Person';
+      this.eventIsOnline = this.initData.isOnline;
+      this.eventURL = this.initData.url;
+      if (!this.eventIsOnline) {
+        this.eventVenue = this.initData.venue;
       }
+      this.eventDate = this.initData.date;
+      this.eventControl = this.initData.requiresAttendanceControl;
+      this.eventFee = parseFloat(this.initData.fee);
     }
-
   },
+
 
   methods: {
     myCloseCreateEvent() {
@@ -224,12 +245,16 @@ export default {
       this.eventFileUploaded = true;
     },
 
+    onEventTypeChange(event) {
+      this.eventIsOnline = event.value === 'Online'
+    },
+
 
     createEvent() {
 
       if (this.selectedType === null) {
         this.showEventErrorMessage('Please select an event type');
-      } else if (this.selectedType === 'Is-Online' && (this.eventURL === null || this.eventURL.length < 1)) {
+      } else if (this.selectedType === 'Online' && (this.eventURL === null || this.eventURL.length < 1)) {
         this.showEventErrorMessage('Online events must have a URL!')
       } else if (this.selectedType === 'In-Person' && (this.eventVenue === null || this.eventVenue.length < 1)) {
         this.showEventErrorMessage('In person events must have a venue!')
@@ -257,7 +282,7 @@ export default {
           isOnline: this.eventIsOnline,
           url: this.eventURL,
           venue: this.eventVenue,
-          requiresAttendanceControl: this.requiresAttendanceControl,
+          requiresAttendanceControl: this.eventControl,
           fee: this.eventFee
         }
         if (this.eventCapacity) {
