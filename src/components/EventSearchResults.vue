@@ -23,7 +23,9 @@
                   </div>
                 </div>
                 <div class="product-grid-item-content">
-                  <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image || 'https://thewifiexperts.co.nz/wp-content/uploads/2018/06/new_statesman_events.jpg'} `" style="max-width: 50vh; min-width: 50vh; min-height: 30vh; max-height: 30vh"/>
+                  <router-link :to="`/events/${slotProps.data.eventId}`">
+                    <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image || 'https://thewifiexperts.co.nz/wp-content/uploads/2018/06/new_statesman_events.jpg'} `" style="max-width: 50vh; min-width: 50vh; min-height: 30vh; max-height: 30vh"/>
+                  </router-link>
                   <div class="product-name">{{slotProps.data.title}} - {{slotProps.data.dateString}}</div>
                   <div class="num-attendees">Attendees: {{slotProps.data.numAcceptedAttendees}}/{{slotProps.data.capacity || 'Unlimited'}}</div>
                 </div>
@@ -157,12 +159,9 @@ export default {
         api.events.getOneEvent(curEvent.eventId)
           .then(res => {
             curEvent.userId = res.data.organizerId;
-            let date = '';
-            let rawDate = new Date(res.data.date);
-            curEvent.date = rawDate;
-            date += rawDate.toLocaleDateString();
-            let time = `${rawDate.getHours()}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`
-            curEvent.dateString = `${date} ${time}`;
+
+            curEvent.date = new Date(res.data.date);
+            curEvent.dateString = this.getDateString(curEvent.date);
 
             api.users.getUserImage(curEvent.userId)
               .then(res => {
@@ -183,6 +182,29 @@ export default {
           });
       }
 
+    },
+
+
+    getDateString(date) {
+      String.prototype.paddingLeft = function (paddingValue) {
+        return String(paddingValue + this).slice(-paddingValue.length);
+      };
+
+      String.prototype.format = function () {
+        let args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, number) {
+          return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+      };
+
+      let newDate = '';
+      let rawDate = new Date(date);
+      newDate += rawDate.toLocaleDateString();
+      let hours = rawDate.getHours().toString().paddingLeft("00");
+      let minutes = rawDate.getMinutes().toString().paddingLeft("00");
+      let time = "{0}:{1}".format(hours, minutes)
+      newDate = `${newDate} ${time}`;
+      return newDate;
     },
 
 

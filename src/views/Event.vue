@@ -41,7 +41,7 @@
               </div>
             </div>
             <!--          ATTENDEES-->
-            <div class="p-col-12" style="height: 28vh">
+            <div class="p-col-12" style="height: 27vh">
               <div class="box box-stretched">
                 <p-card class="all-attendees-card" style="width: 100%; height: 100%">
                   <template #header>
@@ -50,7 +50,7 @@
                     </div>
                   </template>
                   <template #content>
-                    <div v-if="eventLoaded" class="attendees-table">
+                    <div  class="attendees-table">
                       <p-table :value="attendees" responsiveLayout="scroll">
                         <p-column field="attendeeId" header="">
                           <template #body="slotProps">
@@ -97,7 +97,7 @@
               </div>
 
               <!--                EVENT INFO-->
-              <div class="p-col-12">
+              <div class="p-col-12" style="max-height: 51vh;">
                 <p-card class="info-card" style="width: 100%; height: 100%">
                   <template #header>
                     <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
@@ -108,8 +108,7 @@
                   <template #content>
                     <div v-if="eventLoaded">
                       <i class="pi pi-tag icon"></i>
-                      <span
-                        class="product-category">{{ getCategoriesFromId(eventInfo.categories) }}</span>
+                      <span class="product-category">{{ getCategoriesFromId(eventInfo.categories) }}</span>
                     </div>
                     <hr>
                     <div>
@@ -149,10 +148,67 @@
                     <hr>
                     <div>
                       <i class="pi pi-money-bill icon"></i>
-                      <span class="venue">
+                      <span class="fee">
                       <strong>Fee:</strong> ${{ eventInfo.fee }}
                     </span>
                     </div>
+                    <hr>
+                    <br>
+                    <div v-if="currentStatus===null && spotsAvailable && !inPast">
+                      <p-button class="p-button-raised p-button-rounded p-button-lg" @click="apply"
+                                style="color: white;
+                                background-image: linear-gradient(to right, #3700ff, #c800ff);
+                                -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);">
+                        Request Attendance
+                      </p-button>
+                    </div>
+
+                    <div v-else-if="currentStatus==='pending'">
+                      <div class="pending">
+                        Pending
+                      </div>
+                    </div>
+
+                    <div v-else-if="currentStatus==='accepted'" style="display: inline-flex">
+                      <div class="accepted">
+                        Accepted
+                      </div>
+                      <div style="padding-left: 1vh">
+                        <p-button class="p-button-raised p-button-rounded p-button-lg" @click="cancelApplication"
+                                  style="color: white; background: #c10303; font-size: xx-large;">
+                          <i class="pi pi-times" style="padding-right: 1vh"></i>
+                          Cancel
+                        </p-button>
+                      </div>
+                    </div>
+
+                    <div v-else-if="currentStatus==='rejected'">
+                      <div class="rejected">
+                        Rejected
+                      </div>
+                    </div>
+
+                    <div v-else>
+                      <div class="unavailable">
+                        Unavailable
+                      </div>
+                    </div>
+
+                    <p-dialog v-model:visible="displayLoginErrorModal" :style="{width: '10vw'}" :modal="true">
+                      <template #header>
+                        <div style="font-size: x-large">
+                          <i class="pi pi-exclamation-triangle" />
+                          <strong>       Alert</strong>
+                        </div>
+
+                      </template>
+
+                      <p class="p-m-0">
+                        Please login first</p>
+                      <template #footer>
+                        <p-button label="OK" icon="pi pi-check" @click="closeLoginErrorModal" autofocus />
+                      </template>
+                    </p-dialog>
 
                   </template>
 
@@ -182,18 +238,23 @@
                           verticalViewPortHeight="60vh">
 
                 <template #item="slotProps">
+                    <div class="product-item" style="padding-top: 0; cursor: pointer;" @click="routeToEvent(slotProps.data.eventId)">
+                      <div class="product-item-content" style="padding-top: 0">
 
-                  <div class="product-item" >
-                    <div class="product-item-content" >
-                      <div class="p-mb-3">
-                        <img :alt="slotProps.data.title" :src="`${slotProps.data.eventImage}`"
-                             class="product-image" style="max-height: 10vh" />
-                      </div>
-                      <div>
-                        <h4 class="p-mb-1">{{ slotProps.data.title }}</h4>
+                        <div style="padding-top: 0">
+                          <i class="pi pi-tag" style="font-size: 1vh; padding-right:0.5vh"></i>
+                          <span class="product-category"><small>{{getCategoriesFromId(slotProps.data.categories)}}</small></span>
+                        </div>
+                        <br>
+                        <div class="p-mb-3">
+                            <img :alt="slotProps.data.title" :src="`${slotProps.data.eventImage}`"
+                                 class="product-image" style="height: 10vh" />
+                        </div>
+                        <div>
+                          <h4 class="p-mb-1">{{ slotProps.data.title }}</h4>
+                        </div>
                       </div>
                     </div>
-                  </div>
                 </template>
               </p-carousel>
             </div>
@@ -225,17 +286,56 @@ export default {
       allCategories: [],
       attendees: [],
       similarEvents: [],
+      currentStatus: null,
+      userId: null,
+      isLogged: false,
+      displayLoginErrorModal: false,
+      inPast: false,
+      spotsAvailable: false,
     }
   },
 
   created() {
     this.eventId = this.$route.params.eventId;
+    this.isLogged = localStorage.getItem('token') !== "null";
     this.onInitialize();
-
+    if (this.isLogged) {
+      this.userId = parseInt(localStorage.getItem('id'));
+      this.getStatus();
+    }
   },
 
 
   methods: {
+
+    getCategoriesFromId(ids) {
+      let names = []
+      for (let i = 0; i < ids.length; i++) {
+        for (let j = 0; j < this.allCategories.length; j++) {
+          if (this.allCategories[j].id === ids[i]) {
+            names.push(this.allCategories[j].name)
+          }
+        }
+      }
+      return `Categories: ${names.join(', ')}`;
+    },
+
+    getStatus() {
+      api.events.getEventAttendees(this.eventId)
+      .then(res => {
+        let allAttendees = res.data;
+        for (let i = 0; i < allAttendees.length; i++) {
+          if (allAttendees[i].attendeeId === this.userId) {
+            this.currentStatus = allAttendees[i].status;
+          }
+        }
+
+      }).catch(err => {
+        console.log(err);
+      })
+
+    },
+
     onInitialize() {
       this.eventId = this.$route.params.eventId;
       this.getAllEventData();
@@ -246,11 +346,15 @@ export default {
         .then(res => {
           this.eventInfo = res.data;
 
-          let date = '';
           let rawDate = new Date(this.eventInfo.date);
-          date += rawDate.toLocaleDateString();
-          let time = `${rawDate.getHours()}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`
-          this.eventInfo.dateString = `${date} ${time}`;
+          this.inPast = rawDate < new Date();
+          this.eventInfo.dateString = this.getDateString(rawDate);
+
+          if (this.eventInfo.attendeeCount < this.eventInfo.capacity) {
+
+            this.spotsAvailable = true;
+          }
+
           api.events.getAllCategories()
             .then(res => {
               this.allCategories = res.data;
@@ -269,10 +373,39 @@ export default {
       });
     },
 
+
+    getDateString(date) {
+      String.prototype.paddingLeft = function (paddingValue) {
+        return String(paddingValue + this).slice(-paddingValue.length);
+      };
+
+      String.prototype.format = function () {
+        let args = arguments;
+        return this.replace(/{(\d+)}/g, function (match, number) {
+          return typeof args[number] != 'undefined' ? args[number] : match;
+        });
+      };
+
+      let newDate = '';
+      let rawDate = new Date(date);
+      newDate += rawDate.toLocaleDateString();
+      let hours = rawDate.getHours().toString().paddingLeft("00");
+      let minutes = rawDate.getMinutes().toString().paddingLeft("00");
+      let time = "{0}:{1}".format(hours, minutes)
+      newDate = `${newDate} ${time}`;
+      return newDate;
+    },
+
     getAllAttendees() {
       api.events.getEventAttendees(this.eventId)
         .then(res => {
-          this.attendees = res.data
+          let attendees = res.data
+
+          for (let i = 0; i < attendees.length; i++) {
+            if (attendees[i].status === 'accepted') {
+              this.attendees.push(attendees[i])
+            }
+          }
           this.getAllAttendeeImages();
           this.getAllAttendeeRoles();
         })
@@ -375,6 +508,40 @@ export default {
 
     },
 
+    apply() {
+      if (!this.isLogged) {
+        this.displayLoginErrorModal = true;
+      } else {
+        api.attendance.requestAttendance(this.eventId)
+          .then(() => {
+            window.location.reload();
+          })
+        .catch(err => {
+          console.log(err);
+        })
+      }
+    },
+
+    cancelApplication() {
+      api.attendance.deleteAttendance(this.eventId)
+      .then(() => {
+        window.location.reload()
+      }).catch(err => {
+        console.log(err);
+      })
+    },
+
+    closeLoginErrorModal() {
+      this.displayLoginErrorModal = false;
+    },
+
+    routeToEvent(eventId){
+      this.$router.push({name: 'Event', params: {eventId: eventId}});
+      setTimeout(() => {
+        this.$router.go();
+
+      }, 0)
+    }
 
   }
 }
@@ -426,6 +593,7 @@ export default {
 .info-card {
   border-radius: 30px;
   -webkit-box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.4);
+  font-size: small;
 }
 
 .info-card >>> .p-card-header {
@@ -434,6 +602,16 @@ export default {
   color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+}
+.info-card >>> .p-card-content {
+  padding: 0;
+}
+
+
+.info-card >>> .p-card-body {
+  text-align: -webkit-center;
+  max-height: 89%;
+  overflow: auto;
 }
 
 .user-img-card {
@@ -499,5 +677,40 @@ export default {
   color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+}
+
+.pending {
+  padding: 1vh;
+  width: fit-content;
+  background-color: #ffd8b2;
+  color: #805b36;
+  border-radius: 25px;
+  font-size: xx-large;
+}
+
+.accepted {
+  padding: 1vh;
+  width: fit-content;
+  background-color: #c8e6c9;
+  color: #256029;
+  border-radius: 25px;
+  font-size: xx-large;
+}
+.rejected {
+  padding: 1vh;
+  width: fit-content;
+  background-color: #ffcdd2;
+  color: #c63737;
+  border-radius: 25px;
+  font-size: xx-large;
+}
+
+.unavailable {
+  padding: 1vh;
+  width: fit-content;
+  background-color: #7f7c7c;
+  color: #ffffff;
+  border-radius: 25px;
+  font-size: xx-large;
 }
 </style>

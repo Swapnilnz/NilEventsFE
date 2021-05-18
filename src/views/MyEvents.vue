@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="ready">
     <NavbarComponent/>
     <div class="hosted-events-title" style="
       -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
@@ -13,7 +13,13 @@
     <div>
       <p-table :value="hostedEvents" dataKey="id" responsiveLayout="scroll" removableSort>
 
-        <p-column field="title" header="Title" sortable></p-column>
+        <p-column field="title" header="Title" sortable>
+          <template #body="slotProps">
+            <router-link :to="`/events/${slotProps.data.id}`">
+              {{slotProps.data.title}}
+            </router-link>
+          </template>
+        </p-column>
 
         <p-column field="attendeeCount" header="Attending" sortable></p-column>
         <p-column field="capacity" header="Capacity" sortable></p-column>
@@ -27,7 +33,7 @@
 
         <p-column field="attendees" header="Attendees">
           <template #body="slotProps">
-            <p-button icon="pi pi-user" label="Attendees" style="background: #1ecb00" @click="displayAttendeeDialog=true"/>
+            <p-button icon="pi pi-user" label="Attendees" style="background: #1ecb00" @click="displayAttendeeDialogMethod(slotProps.data)"/>
             <p-dialog v-model:visible="displayAttendeeDialog" :closable="false" :modal="true" :showHeader="false"
                       :style="{width: '40vw'}"
                       contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
@@ -38,7 +44,7 @@
                   Event Attendees
                 </div>
 
-                  <p-table :value="slotProps.data.attendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1">
+                  <p-table :value="currAttendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1">
 
                     <p-column field="firstName" header="First name" sortable></p-column>
                     <p-column field="lastName" header="Last name" sortable></p-column>
@@ -56,7 +62,7 @@
 
                     <p-column field="changeStatus" header="Change Status">
                       <template #body="{data}">
-                        <p-dropdown v-model="attendanceKey" :options="attendanceOptions" @change="onAttendanceChange(slotProps, data, $event)" placeholder="Accept/Reject" />
+                        <p-dropdown :options="attendanceOptions" @change="onAttendanceChange(currEventId, data, $event)" placeholder="Select status"/>
 
                       </template>
                     </p-column>
@@ -75,14 +81,15 @@
 
         <p-column field="edit" header="Edit">
           <template #body="slotProps">
-            <p-button icon="pi pi-pencil" style="background: #8bc7ee" :disabled="inPast(slotProps)" @click="showEdit(slotProps.data)"/>
+            <p-button icon="pi pi-pencil" style="background: #8bc7ee" :disabled="inPast(slotProps.data.date)" @click="showEdit(slotProps.data)"/>
 
           </template>
         </p-column>
 
         <p-column field="delete" header="Delete">
           <template #body="slotProps">
-            <p-button icon="pi pi-times" style="background: #cb0000" :disabled="inPast(slotProps.data.date)" @click="deleteEvent(slotProps.data.id)"/>
+            <p-button icon="pi pi-times" style="background: #cb0000" :disabled="inPast(slotProps.data.date)" @click="deleteEvent($event, slotProps.data.id)"/>
+            <p-confirm></p-confirm>
           </template>
         </p-column>
       </p-table>
@@ -126,9 +133,11 @@ export default {
       loadingComplete: false,
       displayAttendeeDialog: false,
       attendanceOptions: ['Accepted', 'Rejected', 'Pending'],
-      attendanceKey: "",
       displayUpdateEvent: false,
       updateEventInitData: null,
+      ready: false,
+      currAttendees: [],
+      currEventId: null,
     }
   },
 
@@ -140,7 +149,6 @@ export default {
 
   methods: {
     getAllEvents() {
-
       api.events.getEventsQueryOnly('')
         .then(res => {
           this.allEvents = res.data;
@@ -159,8 +167,10 @@ export default {
               if (eventData.organizerId === this.userId) {
                 api.events.getEventAttendees(curEventId)
                 .then(res => {
+                  console.log(res.data);
                   eventData.attendees = res.data;
                   this.hostedEvents.push(eventData);
+                  console.log(this.hostedEvents);
 
                 }).catch(err => console.log(err))
 
@@ -182,6 +192,7 @@ export default {
             }).catch(err => console.log(err))
 
           }
+          this.ready = true;
 
         }).catch(err => {
         console.log(err);
@@ -256,26 +267,43 @@ export default {
       return rawDate < new Date();
     },
 
-    deleteEvent(id) {
-      api.events.deleteEvent(id).then(() => {
-        for (let j = 0; j < this.myEvents.length; j++) {
-          console.log(this.myEvents[j], id, this.myEvents[j].eventId === id);
-          if (this.myEvents[j].eventId === id) {
-            delete this.myEvents[j];
-          }
-        }
+    deleteEvent(event, id) {
+      this.$confirm.require({
+        target: event.currentTarget,
+        message: 'Are you sure you want to proceed?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+          api.events.deleteEvent(id).then(() => {
+            for (let j = 0; j < this.myEvents.length; j++) {
+              console.log(this.myEvents[j], id, this.myEvents[j].eventId === id);
+              if (this.myEvents[j].eventId === id) {
+                delete this.myEvents[j];
+              }
+            }
 
-        for (let i = 0; i < this.hostedEvents.length; i++) {
-          if (this.hostedEvents[i].id === id) {
-            delete this.hostedEvents[i];
-          }
-        }
-        window.location.reload();
+            for (let i = 0; i < this.hostedEvents.length; i++) {
+              if (this.hostedEvents[i].id === id) {
+                delete this.hostedEvents[i];
+              }
+            }
+            window.location.reload();
 
-      })
-      .catch(err => {
-        console.log(err);
-      })
+          })
+            .catch(err => {
+              console.log(err);
+            })
+        },
+        reject: () => {
+          //callback to execute when user rejects the action
+        }
+      });
+
+    },
+
+    displayAttendeeDialogMethod(data) {
+      this.currEventId = data.id;
+      this.currAttendees = data.attendees;
+      this.displayAttendeeDialog = true;
     },
 
     getStatus(status) {
@@ -289,9 +317,9 @@ export default {
       }
     },
 
-    onAttendanceChange(eventData, attendeeInfo, event) {
+    onAttendanceChange(currEventId, attendeeInfo, event) {
 
-      let eventId = eventData.data.id;
+      let eventId = currEventId
       let attendeeId = attendeeInfo.attendeeId;
       let newStatus = event.value.toLowerCase();
 

@@ -61,7 +61,7 @@
         <div class="p-grid" style="margin-top: 0.5vh; width: 60%">
 
           <div class="p-col" style="text-align: right">
-            <p-multiselect style="width: 13rem; -webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4); text-align: left; border-radius: 30px"
+            <p-multiselect style="width: 22vh; -webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4); text-align: left; border-radius: 30px"
                            v-model="selectedCategories"
                            :filter="true"
                            :options="allCategories"

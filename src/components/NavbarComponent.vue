@@ -319,6 +319,7 @@ export default {
 
     if (localStorage.getItem('token') !== 'null') {
       this.getLoggedInfo();
+
     }
 
   },
@@ -338,7 +339,7 @@ export default {
     getLoggedInfo() {
       let id = localStorage.getItem('id');
       let navbarInfo = this.navbarInfo;
-      api.users.getUser(id)
+      return api.users.getUser(id)
         .then(res => {
           navbarInfo.loggedUserFirstName = res.data.firstName;
           navbarInfo.loggedUserLastName = res.data.lastName;
@@ -351,7 +352,6 @@ export default {
                 navbarInfo.image = reader.result;
               }
               this.isLogged = true;
-              window.location.reload()
             }).catch(err => {
             console.log(err);
             navbarInfo.image = 'https://www.wallpaperup.com/template/dist/images/default/avatar.png?v=3.5.1';
@@ -437,7 +437,16 @@ export default {
               this.loginPass = null;
               this.isLogged = false;
               this.$router.push({name: 'Home'});
-            });
+            }).catch(err => {
+            localStorage.setItem('id', null);
+            localStorage.setItem('token', null);
+            this.loginEmail = null;
+            this.loginPass = null;
+            this.isLogged = false;
+            console.log(err);
+
+            this.$router.push({name: 'Home'});
+          })
           break;
         case 'Profile':
           this.$router.push({name: 'Profile'});
@@ -476,6 +485,7 @@ export default {
 
           this.isLogged = true;
           this.closeLogin();
+          window.location.reload()
 
         }).catch(err => {
         this.loginSuccess = false;
@@ -483,6 +493,7 @@ export default {
         this.showLoginError();
       })
     },
+
 
     showLoginError() {
       this.showLoginErrorMsg = true;

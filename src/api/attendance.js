@@ -11,6 +11,20 @@ const updateAttendance = function (eventId, attendeeId, newVal) {
         .then(res => res)
 }
 
+const requestAttendance = function (eventId) {
+    return axiosInstance
+        .post(`/events/${eventId}/attendees`)
+        .then(res => res);
+}
+
+const deleteAttendance = function(eventId) {
+    return axiosInstance
+        .delete(`/events/${eventId}/attendees`)
+        .then(res => res);
+}
+
 export default  {
-    updateAttendance
+    updateAttendance,
+    requestAttendance,
+    deleteAttendance
 }

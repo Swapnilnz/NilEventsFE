@@ -26,6 +26,8 @@ import Divider from "primevue/divider";
 import InputNumber from 'primevue/inputnumber';
 import Checkbox from 'primevue/checkbox';
 import Calendar from 'primevue/calendar';
+import ConfirmationService from 'primevue/confirmationservice';
+import ConfirmPopup from 'primevue/confirmpopup';
 
 
 
@@ -39,6 +41,8 @@ const app = createApp(App);
 app.use(PrimeVue, {ripple:true});
 app.use(router);
 app.use(ToastService);
+app.use(ConfirmationService);
+
 
 // COMPONENTS
 app.component('p-input', Input);
@@ -63,6 +67,8 @@ app.component('p-divider', Divider);
 app.component('p-number', InputNumber);
 app.component('p-checkbox', Checkbox);
 app.component('p-calender', Calendar);
+app.component('p-confirm', ConfirmPopup);
+
 
 
 app.mount('#app')

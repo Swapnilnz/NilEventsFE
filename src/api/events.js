@@ -67,9 +67,7 @@ const getEventAttendees = function (id) {
 }
 
 const postEvent = function (payload) {
-    return axiosInstance.post(`/events`, payload,{
-        headers: {'X-Authorization': localStorage.getItem('token')}
-    }).then(res => res);
+    return axiosInstance.post(`/events`, payload).then(res => res);
 }
 
 const putEventImage = function (id, body) {
@@ -85,6 +83,10 @@ const deleteEvent = function(id) {
         .then(res => res)
 }
 
+const updateEvent = function(id, payload) {
+    return axiosInstance.patch(`/events/${id}`, payload).then(res => res);
+}
+
 export default {
     getEventsQueryOnly,
     getAllCategories,
@@ -95,5 +97,6 @@ export default {
     getEventAttendees,
     postEvent,
     putEventImage,
-    deleteEvent
+    deleteEvent,
+    updateEvent
 }
