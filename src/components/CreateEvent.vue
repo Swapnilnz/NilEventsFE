@@ -286,7 +286,13 @@ export default {
     },
 
     createPayload() {
+      Date.prototype.addHours = function(h) {
+        this.setTime(this.getTime() + (h*60*60*1000));
+        return this;
+      }
+      this.eventDate.addHours(12);
       let sqlDate = this.eventDate.toISOString().slice(0, 19).replace('T', ' ');
+      console.log('2', sqlDate);
       let categoryIds = [];
       for (let i = 0; i < this.selectedCategories.length; i++) {
         categoryIds.push(this.selectedCategories[i].id);
@@ -373,7 +379,7 @@ export default {
     },
 
     showEventCreateSuccess(message) {
-      window.location.reload();
+      // window.location.reload();
 
       this.$toast.add({
         severity: 'success',
