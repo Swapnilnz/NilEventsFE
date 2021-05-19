@@ -28,7 +28,7 @@ import Checkbox from 'primevue/checkbox';
 import Calendar from 'primevue/calendar';
 import ConfirmationService from 'primevue/confirmationservice';
 import ConfirmPopup from 'primevue/confirmpopup';
-
+import Textarea from "primevue/textarea";
 
 
 
@@ -68,6 +68,7 @@ app.component('p-number', InputNumber);
 app.component('p-checkbox', Checkbox);
 app.component('p-calender', Calendar);
 app.component('p-confirm', ConfirmPopup);
+app.component('p-textarea', Textarea);
 
 
 

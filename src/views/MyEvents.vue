@@ -33,7 +33,7 @@
 
         <p-column field="attendees" header="Attendees">
           <template #body="slotProps">
-            <p-button icon="pi pi-user" label="Attendees" style="background: #1ecb00" @click="displayAttendeeDialogMethod(slotProps.data)"/>
+            <p-button icon="pi pi-user" label="Attendees" style="background: rgb(162 0 255)" @click="displayAttendeeDialogMethod(slotProps.data)"/>
             <p-dialog v-model:visible="displayAttendeeDialog" :closable="false" :modal="true" :showHeader="false"
                       :style="{width: '40vw'}"
                       contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
@@ -81,14 +81,14 @@
 
         <p-column field="edit" header="Edit">
           <template #body="slotProps">
-            <p-button icon="pi pi-pencil" style="background: #8bc7ee" :disabled="inPast(slotProps.data.date)" @click="showEdit(slotProps.data)"/>
+            <p-button icon="pi pi-pencil" style="background: rgb(182 0 255)" :disabled="inPast(slotProps.data.date)" @click="showEdit(slotProps.data)"/>
 
           </template>
         </p-column>
 
         <p-column field="delete" header="Delete">
           <template #body="slotProps">
-            <p-button icon="pi pi-times" style="background: #cb0000" :disabled="inPast(slotProps.data.date)" @click="deleteEvent($event, slotProps.data.id)"/>
+            <p-button icon="pi pi-times" style="background: #a70101" :disabled="inPast(slotProps.data.date)" @click="deleteEvent($event, slotProps.data.id)"/>
             <p-confirm></p-confirm>
           </template>
         </p-column>
@@ -167,10 +167,8 @@ export default {
               if (eventData.organizerId === this.userId) {
                 api.events.getEventAttendees(curEventId)
                 .then(res => {
-                  console.log(res.data);
                   eventData.attendees = res.data;
                   this.hostedEvents.push(eventData);
-                  console.log(this.hostedEvents);
 
                 }).catch(err => console.log(err))
 
@@ -214,11 +212,10 @@ export default {
               reader.onload = function () {
                 curEvent.image = reader.result;
               }
-            } else {
-              curEvent.image = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
             }
           })
           .catch(err => {
+            curEvent.image = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
             console.log(err);
           });
       }

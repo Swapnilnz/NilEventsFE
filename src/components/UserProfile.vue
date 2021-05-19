@@ -124,7 +124,7 @@
       </div>
       <br>
       <div v-if="!fileUploaded" class="img-upload" style="text-align: center">
-        <p-file-upload :auto="true" :customUpload="true" :fileLimit="1" accept="image/*, .gif" chooseLabel="Browse"
+        <p-file-upload :auto="true" :customUpload="true" :fileLimit="1" accept="image/png, image/jpeg, image/jpg, .gif" chooseLabel="Browse"
                        mode="basic" name="demo[]" @uploader="myUploader">
           <template #empty>
             <p>Drag and drop files to here to upload.</p>

@@ -38,7 +38,7 @@
         </div>
         <div class="email" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-input v-model="eventDescription" placeholder="e.g. 'A night of fun stuff'"
+                    <p-textarea v-model="eventDescription" placeholder="e.g. 'A night of fun stuff'"
                              style="border-radius: 20px; width: 100%;"
                              type="text"/>
                   </span>
@@ -59,7 +59,7 @@
 
 
           <div class="capacity" style="text-align: center;width: 45%; display: inline-flex;">
-            <p-number v-model="eventCapacity" placeholder="Blank for no capacity"
+            <p-number v-model="eventCapacity" placeholder="Blank for no capacity" :min="0"
                       style="width: 100%; border-radius: 30px"></p-number>
           </div>
           <div class="is-online" style="text-align: center; width: 45%">
@@ -129,7 +129,7 @@
 
           <div class="price" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-number v-model="eventFee" currency="USD" locale="en-US" mode="currency"/>
+                    <p-number v-model="eventFee" currency="USD" locale="en-US" mode="currency" :min="0"/>
                   </span>
           </div>
         </div>
@@ -142,7 +142,7 @@
         </div>
         <div v-if="!eventFileUploaded" class="img-upload" style="text-align: center">
           <!--                <input type="file">-->
-          <p-file-upload :auto="true" :customUpload="true" :fileLimit="1" accept="image/*, .gif" chooseLabel="Browse"
+          <p-file-upload :auto="true" :customUpload="true" :fileLimit="1" accept="image/png, image/jpeg, image/jpg, .gif" chooseLabel="Browse"
                          mode="basic" name="demo[]" @uploader="myEventUploader">
           </p-file-upload>
         </div>
@@ -150,7 +150,6 @@
           <label v-if="eventFileUploaded">File: {{ eventImage.name }}</label>
         </div>
 
-        <br>
         <div v-if="showEventError">
           <p-message severity="error"> {{ eventErrorMessage }}</p-message>
         </div>
@@ -379,7 +378,7 @@ export default {
     },
 
     showEventCreateSuccess(message) {
-      // window.location.reload();
+      window.location.reload();
 
       this.$toast.add({
         severity: 'success',

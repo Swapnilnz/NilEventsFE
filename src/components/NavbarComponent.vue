@@ -61,7 +61,7 @@
                       <p-input v-model="firstName" placeholder="First Name*" style="border-radius: 20px; width: 100%"
                                type="text"/>
                     </span>
-                    <small v-if="firstName.length < 1" class="p-error">Please provide a first name</small>
+                    <small v-if="invalidFirstName" class="p-error" @change="validateFirstName">Please provide a first name</small>
 
                   </div>
 
@@ -70,7 +70,7 @@
                       <p-input v-model="lastName" placeholder="Last Name*" style="border-radius: 20px; width: 100%"
                                type="text"/>
                     </span>
-                    <small v-if="lastName.length < 1" class="p-error">Please provide a last name</small>
+                    <small v-if="invalidLastName" class="p-error" @change="validateLastName">Please provide a last name</small>
                   </div>
 
                 </div>
@@ -138,7 +138,7 @@
                 <br>
                 <div v-if="!fileUploaded" class="img-upload" style="text-align: center">
                   <!--                <input type="file">-->
-                  <p-file-upload :auto="true" :customUpload="true" :fileLimit="1" accept="image/*, .gif" chooseLabel="Browse"
+                  <p-file-upload :auto="true" :customUpload="true" :fileLimit="1" accept="image/png, image/jpeg, image/jpg, .gif" chooseLabel="Browse"
                                  mode="basic" name="demo[]" @uploader="myUploader">
                     <template #empty>
                       <p>Drag and drop files to here to upload.</p>
@@ -290,12 +290,14 @@ export default {
       // SIGN UP
       displaySignUpModal: false,
       firstName: '',
+      invalidFirstName: false,
       lastName: '',
+      invalidLastName: false,
       email: null,
-      invalidEmail: true,
+      invalidEmail: false,
       emailInvalidString: 'invalid',
       password: null,
-      invalidPassword: true,
+      invalidPassword: false,
       image: null,
       fileUploaded: false,
 
@@ -332,6 +334,14 @@ export default {
     password: function (newPass) {
       this.invalidPassword = newPass.length < 8;
     },
+
+    firstName: function (newFirstName) {
+      this.invalidFirstName = newFirstName < 1;
+    } ,
+
+    lastName: function (newLastName) {
+      this.invalidLastName = newLastName < 1;
+    }
 
   },
 
@@ -402,7 +412,19 @@ export default {
 
 
     register() {
-      if (!this.invalidEmail && !this.invalidPassword && this.firstName.length > 0 && this.lastName.length > 0) {
+      if (!emailRegEx.test(this.email)) {
+        this.invalidEmail = true;
+      }
+      if (this.password === null || this.password.length < 8) {
+        this.invalidPassword = true;
+      }
+      if (this.firstName === null || this.firstName.length < 1) {
+        this.invalidFirstName = true;
+      }
+      if (this.lastName === null || this.lastName.length < 1) {
+        this.invalidLastName = true;
+      }
+      if (!this.invalidEmail && !this.invalidPassword && !this.invalidFirstName && !this.invalidLastName) {
         let payload = {
           firstName: this.firstName,
           lastName: this.lastName,
@@ -497,9 +519,6 @@ export default {
 
     showLoginError() {
       this.showLoginErrorMsg = true;
-      setTimeout(() => {
-        this.showLoginErrorMsg = false;
-      }, 5000);
     },
 
     showRegisterSuccess() {
