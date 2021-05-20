@@ -16,16 +16,16 @@
           <template #grid="slotProps">
             <div class="p-col-12 p-md-4">
               <div class="product-grid-item card">
-                <div class="product-grid-item-top">
+                <div class="product-grid-item-top" style="height: 8vh">
                   <div>
                     <i class="pi pi-tag icon"></i>
                     <span class="product-category">{{getCategoriesFromId(slotProps.data.categories)}}</span>
                   </div>
                 </div>
                 <div class="product-grid-item-content">
-                  <div>
+                  <div class="zoom">
                     <router-link :to="`/events/${slotProps.data.eventId}`">
-                      <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image} `" style="max-width: 50vw; max-height: 30vh"/>
+                      <img class="img-grid" :alt="slotProps.data.title" :src="`${slotProps.data.image} `" style="max-width: 26vw; max-height: 30vh"/>
                     </router-link>
                   </div>
                   <div class="product-name">{{slotProps.data.title}} - {{slotProps.data.dateString}}</div>
@@ -39,7 +39,9 @@
                       <p style="margin: 0; text-align: center">{{slotProps.data.organizerFirstName}} {{slotProps.data.organizerLastName}}</p>
                     </div>
                   </div>
-                  <p-button @click="toEvent(slotProps.data.eventId)" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff);-webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);">View Details</p-button>
+                  <p-button class="zoom" @click="toEvent(slotProps.data.eventId)" style="color: white;
+                   background-image: linear-gradient(to right, #3700ff, #c800ff);
+                   -webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);">View Details</p-button>
                 </div>
               </div>
             </div>
@@ -220,5 +222,4 @@ export default {
 
 <style scoped>
 @import '../../public/styles/home.css';
-
 </style>

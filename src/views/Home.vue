@@ -28,14 +28,14 @@
           <p-input type="text" :disabled=showAdvancedSearch v-model="query" class="p-inputtext-lg" v-on:keyup.enter="searchQueryOnly" placeholder="Search events..." style="border-radius: 33px; width: 70vh"/>
         </span>
 
-        <p-button class="p-button-raised p-button-rounded p-button-lg" @click="searchQueryOnly"
+        <p-button class="p-button-raised p-button-rounded p-button-lg zoom" @click="searchQueryOnly"
                   style="color: white; margin-right: 3vh;
                   background-image: linear-gradient(to right, #3700ff, #c800ff);
                   -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);">
           Search
         </p-button>
 
-        <p-button class="p-button-raised p-button-rounded p-button-lg" @click="showAdvancedSearchMethod"
+        <p-button class="p-button-raised p-button-rounded p-button-lg zoom" @click="showAdvancedSearchMethod"
                   style="color: grey;
                   background-color: white;
                   -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
@@ -76,7 +76,7 @@
           </div>
 
           <div class="p-col" style="text-align: left">
-            <p-button class="p-button-raised p-button-rounded p-button-lg" @click="search"
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom" @click="search"
                       style="color: white; margin-right: 3vh;
                   background-image: linear-gradient(to right, #3700ff, #c800ff);
                   -webkit-box-shadow: 2px 2px 2px rgba(0,0,0,0.4);">

@@ -62,12 +62,16 @@
 
                     <p-column field="changeStatus" header="Change Status">
                       <template #body="{data}">
-                        <p-dropdown :options="attendanceOptions" @change="onAttendanceChange(currEventId, data, $event)" placeholder="Select status"/>
+                        <p-dropdown :options="attendanceOptions" @change="onAttendanceChange(currEvent, currEventId, data, $event)" placeholder="Select status"/>
 
                       </template>
                     </p-column>
 
                   </p-table>
+                <transition-group name="p-message" tag="div">
+                  <p-message v-for="msg of messages" :severity="msg.severity" :key="msg.id">Capacity has been reached!</p-message>
+                </transition-group>
+
                 <div style="display: flex; justify-content:center; padding: 1vh;">
                   <p-button style="border-radius: 10px" autofocus class="p-button-text" icon="pi pi-arrow-left" label="Exit" @click="closeAttendeesDialog"/>
                 </div>
@@ -138,6 +142,8 @@ export default {
       ready: false,
       currAttendees: [],
       currEventId: null,
+      currEvent: null,
+      messages: [],
     }
   },
 
@@ -298,6 +304,7 @@ export default {
     },
 
     displayAttendeeDialogMethod(data) {
+      this.currEvent = data;
       this.currEventId = data.id;
       this.currAttendees = data.attendees;
       this.displayAttendeeDialog = true;
@@ -314,24 +321,33 @@ export default {
       }
     },
 
-    onAttendanceChange(currEventId, attendeeInfo, event) {
+    onAttendanceChange(currEvent, currEventId, attendeeInfo, event) {
 
       let eventId = currEventId
       let attendeeId = attendeeInfo.attendeeId;
       let newStatus = event.value.toLowerCase();
 
-      api.attendance.updateAttendance(eventId, attendeeId, newStatus)
-      .then(() => {
-        for (let i = 0; i < this.hostedEvents.length; i++ ) {
-          for (let j = 0; j < this.hostedEvents[i].attendees.length; j++) {
-            if (this.hostedEvents[i].attendees[j].attendeeId === attendeeId) {
-              this.hostedEvents[i].attendees[j].status = event.value.toLowerCase();
-            }
-          }
-        }
-      }).catch(err => {
-        console.log(err);
-      })
+      if (currEvent.attendeeCount < currEvent.capacity) {
+        api.attendance.updateAttendance(eventId, attendeeId, newStatus)
+            .then(() => {
+              for (let i = 0; i < this.hostedEvents.length; i++ ) {
+                for (let j = 0; j < this.hostedEvents[i].attendees.length; j++) {
+                  if (this.hostedEvents[i].attendees[j].attendeeId === attendeeId) {
+                    this.hostedEvents[i].attendees[j].status = event.value.toLowerCase();
+                    this.currEvent.attendeeCount += 1
+                  }
+                }
+              }
+            }).catch(err => {
+          console.log(err);
+        })
+
+      } else {
+        this.messages = [
+          {severity: 'warn', content: `Capacity (${this.currEvent.capacity}) has been reached!`, id: 1},
+        ]
+      }
+
 
     },
 

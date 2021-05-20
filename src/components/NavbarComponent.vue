@@ -10,7 +10,7 @@
             <img alt="logo" height="50" src="../assets/nil_events_logo_horizontal.png">
           </a>
           <div v-if="isLogged" class="create-event-btn" style="margin-left: 4vh">
-            <p-button class="p-button-raised p-button-rounded p-button-lg" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content "
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content "
                       @click="openCreateEvent">
               Create Event
             </p-button>
@@ -24,7 +24,7 @@
 
 <!--          MY EVENTS-->
           <div v-if="isLogged" class="myevents" style="margin-left: 4vh">
-            <p-button class="p-button-raised p-button-rounded p-button-lg" style="background: white; color: black; width: max-content "
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom" style="background: white; color: black; width: max-content "
                       @click="route('My Events')">
               My Events
             </p-button>
@@ -37,7 +37,7 @@
         <!--        IS NOT LOGGED IN-->
         <div v-if="!isLogged" class="navbar-login">
           <div style="margin-right: 5%">
-            <p-button class="p-button-raised p-button-rounded p-button-lg" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content "
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom" style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content "
                       @click="openSignUp">
               Sign Up
             </p-button>
@@ -166,7 +166,7 @@
           </p-dialog>
 
           <div>
-            <p-button class="p-button-raised p-button-rounded p-button-lg" style="color: black; background-color: white"
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom" style="color: black; background-color: white"
                       @click="openLogin">
               Login
             </p-button>
@@ -228,7 +228,7 @@
         <div v-if="isLogged" class="navbar-welcome" style="width: fit-content; justify-content: space-evenly">
 
           <div class="profile-btn" style="padding: 1vh;">
-            <p-button class="p-button-raised p-button-rounded p-button-lg"
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom"
                       style="color: white; background-image: linear-gradient(to right, #3700ff, #c800ff); width: max-content " @click="openUserProfile">
               <i class="pi pi-user icon"></i>
               Profile
@@ -243,7 +243,7 @@
           </p-dialog>
 
           <div class="logout-btn" style="padding: 1vh;">
-            <p-button class="p-button-raised p-button-rounded p-button-lg" style="color: gray; background: white; width: max-content "
+            <p-button class="p-button-raised p-button-rounded p-button-lg zoom" style="color: gray; background: white; width: max-content "
                       @click="route('Home')">
               <i class="pi pi-sign-out icon"></i>
               Logout
@@ -561,5 +561,13 @@ export default {
   /* .slide-fade-leave-active below version 2.1.8 */ {
   transform: translateX(10px);
   opacity: 0;
+}
+
+.zoom {
+  transition: transform .2s; /* Animation */
+}
+
+.zoom:hover {
+  transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 </style>

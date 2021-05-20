@@ -163,19 +163,26 @@
                       </p-button>
                     </div>
 
-                    <div v-else-if="currentStatus==='pending'">
-                      <div class="pending">
+                    <div v-else-if="currentStatus==='pending'" style="display: inline-flex">
+                      <div class="pending" style="align-self: center;">
                         Pending
+                      </div>
+                      <div style="padding-left: 1vh">
+                        <p-button class="p-button-raised p-button-rounded p-button" @click="cancelApplication"
+                                  style="color: white; background: #920000; align-self: center;">
+                          <i class="pi pi-times" style="padding-right: 1vh"></i>
+                          Cancel
+                        </p-button>
                       </div>
                     </div>
 
                     <div v-else-if="currentStatus==='accepted'" style="display: inline-flex">
-                      <div class="accepted">
+                      <div class="accepted" style="align-self: center;">
                         Accepted
                       </div>
                       <div style="padding-left: 1vh">
-                        <p-button class="p-button-raised p-button-rounded p-button-lg" @click="cancelApplication"
-                                  style="color: white; background: #c10303; font-size: xx-large;">
+                        <p-button class="p-button-raised p-button-rounded p-button" @click="cancelApplication"
+                                  style="color: white; background: #920000; align-self: center;">
                           <i class="pi pi-times" style="padding-right: 1vh"></i>
                           Cancel
                         </p-button>
@@ -183,13 +190,13 @@
                     </div>
 
                     <div v-else-if="currentStatus==='rejected'">
-                      <div class="rejected">
+                      <div class="rejected" style="align-self: center;">
                         Rejected
                       </div>
                     </div>
 
                     <div v-else>
-                      <div class="unavailable">
+                      <div class="unavailable" style="align-self: center;">
                         Unavailable
                       </div>
                     </div>
@@ -248,7 +255,7 @@
                         <br>
                         <div class="p-mb-3">
                             <img :alt="slotProps.data.title" :src="`${slotProps.data.eventImage}`"
-                                 class="product-image" style="height: 10vh" />
+                                 class="product-image zoom" style="max-height: 10vh; max-width: 10vw" />
                         </div>
                         <div>
                           <h4 class="p-mb-1">{{ slotProps.data.title }}</h4>
@@ -324,9 +331,12 @@ export default {
       api.events.getEventAttendees(this.eventId)
       .then(res => {
         let allAttendees = res.data;
+        console.log(allAttendees);
         for (let i = 0; i < allAttendees.length; i++) {
           if (allAttendees[i].attendeeId === this.userId) {
             this.currentStatus = allAttendees[i].status;
+            console.log(this.currentStatus);
+
           }
         }
 
@@ -685,7 +695,7 @@ export default {
   background-color: #ffd8b2;
   color: #805b36;
   border-radius: 25px;
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 .accepted {
@@ -694,7 +704,7 @@ export default {
   background-color: #c8e6c9;
   color: #256029;
   border-radius: 25px;
-  font-size: xx-large;
+  font-size: x-large;
 }
 .rejected {
   padding: 1vh;
@@ -702,7 +712,7 @@ export default {
   background-color: #ffcdd2;
   color: #c63737;
   border-radius: 25px;
-  font-size: xx-large;
+  font-size: x-large;
 }
 
 .unavailable {
@@ -711,6 +721,13 @@ export default {
   background-color: #7f7c7c;
   color: #ffffff;
   border-radius: 25px;
-  font-size: xx-large;
+  font-size: x-large;
+}
+.zoom {
+  transition: transform .2s; /* Animation */
+}
+
+.zoom:hover {
+  transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
 }
 </style>
