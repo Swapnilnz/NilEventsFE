@@ -291,7 +291,6 @@ export default {
       }
       this.eventDate.addHours(12);
       let sqlDate = this.eventDate.toISOString().slice(0, 19).replace('T', ' ');
-      console.log('2', sqlDate);
       let categoryIds = [];
       for (let i = 0; i < this.selectedCategories.length; i++) {
         categoryIds.push(this.selectedCategories[i].id);
@@ -310,7 +309,6 @@ export default {
       if (this.eventCapacity) {
         payload.capacity = this.eventCapacity
       }
-      console.log(payload);
       return payload;
     },
 

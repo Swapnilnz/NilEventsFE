@@ -278,7 +278,6 @@ export default {
         accept: () => {
           api.events.deleteEvent(id).then(() => {
             for (let j = 0; j < this.myEvents.length; j++) {
-              console.log(this.myEvents[j], id, this.myEvents[j].eventId === id);
               if (this.myEvents[j].eventId === id) {
                 delete this.myEvents[j];
               }
@@ -379,7 +378,6 @@ export default {
 
     showEdit(initData) {
       this.updateEventInitData = {...initData};
-      console.log(this.updateEventInitData);
       this.displayUpdateEvent = true;
     },
 

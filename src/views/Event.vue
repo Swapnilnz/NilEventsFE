@@ -331,11 +331,9 @@ export default {
       api.events.getEventAttendees(this.eventId)
       .then(res => {
         let allAttendees = res.data;
-        console.log(allAttendees);
         for (let i = 0; i < allAttendees.length; i++) {
           if (allAttendees[i].attendeeId === this.userId) {
             this.currentStatus = allAttendees[i].status;
-            console.log(this.currentStatus);
 
           }
         }
@@ -479,6 +477,7 @@ export default {
 
         })
         .catch(err => {
+          curEventInfo.eventImage = 'https://tacm.com/wp-content/uploads/2018/01/no-image-available.jpeg'
           console.error(err);
         });
     },

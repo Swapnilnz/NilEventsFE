@@ -136,7 +136,6 @@ export default {
         curEvent.image = null;
         api.events.getImage(curEvent.eventId)
           .then(res => {
-            console.log(res.data);
             if (res.data.size) {
               let reader = new window.FileReader();
               reader.readAsDataURL(res.data);
