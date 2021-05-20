@@ -240,7 +240,7 @@
           </template>
           <template #content>
             <div class="sim-card" style="padding: 1vh">
-              <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="3" :numVisible="3"
+              <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="2" :numVisible="2"
                           :value="similarEvents" class="carousel" orientation="vertical"
                           verticalViewPortHeight="60vh">
 
