@@ -35,54 +35,55 @@
         <p-column field="attendees" header="Attendees">
           <template #body="slotProps">
             <p-button icon="pi pi-user" label="Attendees" style="background: rgb(162 0 255)" @click="displayAttendeeDialogMethod(slotProps.data)"/>
-            <p-dialog v-model:visible="displayAttendeeDialog" :closable="false" :modal="true" :showHeader="false"
-                      :style="{width: '40vw'}"
-                      contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
 
-              <div class="attendee-dialog" style="max-height: 80vh">
-                <div class="dialog-header"
-                     style="background: whitesmoke; padding: 2vh; font-size: xx-large; text-align: center">
-                  Event Attendees
-                </div>
-
-                  <p-table :value="currAttendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1" style="padding: 1vh">
-
-                    <p-column field="firstName" header="First name" sortable></p-column>
-                    <p-column field="lastName" header="Last name" sortable></p-column>
-                    <p-column field="dateOfInterest" header="Date of Interest" sortable>
-                      <template #body="{data}">
-                        {{getDateString(data.dateOfInterest)}}
-                      </template>
-                    </p-column>
-
-                    <p-column field="status" header="Status" sortable>
-                      <template #body="{data}">
-                        <span :class="'customer-badge status-' + getStatus(data.status)"><strong>{{data.status}}</strong></span>
-                      </template>
-                    </p-column>
-
-                    <p-column field="changeStatus" header="Change Status">
-                      <template #body="{data}">
-                        <p-dropdown :options="attendanceOptions" @change="onAttendanceChange(currEvent, currEventId, data, $event)" placeholder="Select status"/>
-
-                      </template>
-                    </p-column>
-
-                  </p-table>
-                <transition-group name="p-message" tag="div">
-                  <p-message v-for="msg of messages" :severity="msg.severity" :key="msg.id">Capacity has been reached!</p-message>
-                </transition-group>
-
-                <div style="display: flex; justify-content:center; padding: 1vh;">
-                  <p-button style="border-radius: 10px" autofocus class="p-button-text" icon="pi pi-arrow-left" label="Exit" @click="closeAttendeesDialog"/>
-                </div>
-
-              </div>
-
-
-            </p-dialog>
           </template>
         </p-column>
+        <p-dialog v-model:visible="displayAttendeeDialog" :closable="false" :modal="true" :showHeader="false"
+                  :style="{width: '40vw'}"
+                  contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
+
+          <div class="attendee-dialog" style="max-height: 80vh">
+            <div class="dialog-header"
+                 style="background: whitesmoke; padding: 2vh; font-size: xx-large; text-align: center">
+              Event Attendees
+            </div>
+
+            <p-table :value="currAttendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1" style="padding: 1vh">
+
+              <p-column field="firstName" header="First name" sortable></p-column>
+              <p-column field="lastName" header="Last name" sortable></p-column>
+              <p-column field="dateOfInterest" header="Date of Interest" sortable>
+                <template #body="{data}">
+                  {{getDateString(data.dateOfInterest)}}
+                </template>
+              </p-column>
+
+              <p-column field="status" header="Status" sortable>
+                <template #body="{data}">
+                  <span :class="'customer-badge status-' + getStatus(data.status)"><strong>{{data.status}}</strong></span>
+                </template>
+              </p-column>
+
+              <p-column field="changeStatus" header="Change Status">
+                <template #body="{data}">
+                  <p-dropdown :options="attendanceOptions" @change="onAttendanceChange(currEvent, currEventId, data, $event)" placeholder="Select status"/>
+
+                </template>
+              </p-column>
+
+            </p-table>
+            <transition-group name="p-message" tag="div">
+              <p-message v-for="msg of messages" :severity="msg.severity" :key="msg.id">Capacity has been reached!</p-message>
+            </transition-group>
+
+            <div style="display: flex; justify-content:center; padding: 1vh;">
+              <p-button style="border-radius: 10px" autofocus class="p-button-text" icon="pi pi-arrow-left" label="Exit" @click="closeAttendeesDialog"/>
+            </div>
+
+          </div>
+
+
+        </p-dialog>
 
         <p-column field="edit" header="Edit">
           <template #body="slotProps">
@@ -333,11 +334,17 @@ export default {
             .then(() => {
               for (let i = 0; i < this.hostedEvents.length; i++ ) {
                 for (let j = 0; j < this.hostedEvents[i].attendees.length; j++) {
-                  if (this.hostedEvents[i].attendees[j].attendeeId === attendeeId) {
+
+                  if (currEventId === this.hostedEvents[i].id
+                    && this.hostedEvents[i].attendees[j].attendeeId === attendeeId
+                    && this.hostedEvents[i].attendees[j].status !== event.value.toLowerCase()) {
+                    let oldStatus = this.hostedEvents[i].attendees[j].status;
                     this.hostedEvents[i].attendees[j].status = event.value.toLowerCase();
                     if (newStatus === 'accepted') {
                       this.currEvent.attendeeCount += 1
-                    } else if (newStatus === 'rejected') {
+                    } else if (oldStatus === 'accepted' && newStatus === 'rejected') {
+                      this.currEvent.attendeeCount -= 1
+                    } else if (oldStatus === 'accepted' && newStatus === 'pending') {
                       this.currEvent.attendeeCount -= 1
                     }
                     this.messages = [];

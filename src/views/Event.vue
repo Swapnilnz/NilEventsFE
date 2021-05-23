@@ -4,7 +4,7 @@
       height: 98vh;
       text-align: -webkit-center;
       border-radius: 15px;
-      background-image: url('https://picsum.photos/800/450?grayscale&blur=2');
+      background: gainsboro;
       background-size: cover;
 ">
     <!--    NAVBAR-->
