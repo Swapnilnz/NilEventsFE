@@ -99,128 +99,130 @@
 
               <!--                EVENT INFO-->
               <div class="p-col-12" style="max-height: 51vh;">
-                <p-card class="info-card" style="width: 100%; height: 100%">
-                  <template #header>
-                    <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
-                      <i class="pi pi-calendar icon" style="fontSize: 2.5vh"></i>
-                      {{ eventInfo.dateString }}
-                    </div>
-                  </template>
-                  <template #content>
-                    <div v-if="eventLoaded">
-                      <i class="pi pi-tag icon"></i>
-                      <span class="product-category">{{ getCategoriesFromId(eventInfo.categories) }}</span>
-                    </div>
-                    <hr>
-                    <div>
-                      <i class="pi pi-list icon"></i>
-                      <span class="description">
+                <div class="box box-stretched">
+                  <p-card class="info-card" style="width: 100%; height: 100%">
+                    <template #header>
+                      <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
+                        <i class="pi pi-calendar icon" style="fontSize: 2.5vh"></i>
+                        {{ eventInfo.dateString }}
+                      </div>
+                    </template>
+                    <template #content>
+                      <div v-if="eventLoaded">
+                        <i class="pi pi-tag icon"></i>
+                        <span class="product-category">{{ getCategoriesFromId(eventInfo.categories) }}</span>
+                      </div>
+                      <hr>
+                      <div>
+                        <i class="pi pi-list icon"></i>
+                        <span class="description">
                       <strong>Description:</strong> {{ eventInfo.description }}
                     </span>
-                    </div>
-                    <hr>
-                    <div>
-                      <i class="pi pi-filter icon"></i>
-                      <span class="capacity">
+                      </div>
+                      <hr>
+                      <div>
+                        <i class="pi pi-filter icon"></i>
+                        <span class="capacity">
                       <strong>Capacity:</strong> {{ eventInfo.capacity }}
                     </span>
-                    </div>
-                    <hr>
-                    <div>
-                      <i class="pi pi-user icon"></i>
-                      <span class="accepted-attendees">
+                      </div>
+                      <hr>
+                      <div>
+                        <i class="pi pi-user icon"></i>
+                        <span class="accepted-attendees">
                       <strong>Accepted attendees:</strong> {{ eventInfo.attendeeCount }}
                     </span>
-                    </div>
-                    <hr>
-                    <div>
-                      <i class="pi pi-external-link icon"></i>
-                      <span class="url">
+                      </div>
+                      <hr>
+                      <div>
+                        <i class="pi pi-external-link icon"></i>
+                        <span class="url">
                       <strong>URL:</strong> {{ eventInfo.url || 'N/A' }}
                     </span>
-                    </div>
-                    <hr>
-                    <div>
-                      <i class="pi pi-map-marker icon"></i>
-                      <span class="venue">
+                      </div>
+                      <hr>
+                      <div>
+                        <i class="pi pi-map-marker icon"></i>
+                        <span class="venue">
                       <strong>Venue:</strong> {{ eventInfo.venue || 'N/A' }}
                     </span>
-                    </div>
-                    <hr>
-                    <div>
-                      <i class="pi pi-money-bill icon"></i>
-                      <span class="fee">
+                      </div>
+                      <hr>
+                      <div>
+                        <i class="pi pi-money-bill icon"></i>
+                        <span class="fee">
                       <strong>Fee:</strong> ${{ eventInfo.fee }}
                     </span>
-                    </div>
-                    <hr>
-                    <br>
-                    <div v-if="currentStatus===null && spotsAvailable && !inPast">
-                      <p-button class="p-button-raised p-button-rounded p-button-lg" @click="apply"
-                                style="color: white;
+                      </div>
+                      <hr>
+                      <br>
+                      <div v-if="currentStatus===null && spotsAvailable && !inPast">
+                        <p-button class="p-button-raised p-button-rounded p-button-lg" @click="apply"
+                                  style="color: white;
                                 background-image: linear-gradient(to right, #3700ff, #c800ff);
                                 -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);">
-                        Request Attendance
-                      </p-button>
-                    </div>
-
-                    <div v-else-if="currentStatus==='pending'" style="display: inline-flex">
-                      <div class="pending" style="align-self: center;">
-                        Pending
-                      </div>
-                      <div style="padding-left: 1vh">
-                        <p-button class="p-button-raised p-button-rounded p-button" @click="cancelApplication"
-                                  style="color: white; background: #920000; align-self: center;">
-                          <i class="pi pi-times" style="padding-right: 1vh"></i>
-                          Cancel
+                          Request Attendance
                         </p-button>
                       </div>
-                    </div>
 
-                    <div v-else-if="currentStatus==='accepted'" style="display: inline-flex">
-                      <div class="accepted" style="align-self: center;">
-                        Accepted
-                      </div>
-                      <div style="padding-left: 1vh">
-                        <p-button class="p-button-raised p-button-rounded p-button" @click="cancelApplication"
-                                  style="color: white; background: #920000; align-self: center;">
-                          <i class="pi pi-times" style="padding-right: 1vh"></i>
-                          Cancel
-                        </p-button>
-                      </div>
-                    </div>
-
-                    <div v-else-if="currentStatus==='rejected'">
-                      <div class="rejected" style="align-self: center;">
-                        Rejected
-                      </div>
-                    </div>
-
-                    <div v-else>
-                      <div class="unavailable" style="align-self: center;">
-                        Unavailable
-                      </div>
-                    </div>
-
-                    <p-dialog v-model:visible="displayLoginErrorModal" :style="{width: '10vw'}" :modal="true">
-                      <template #header>
-                        <div style="font-size: x-large">
-                          <i class="pi pi-exclamation-triangle" />
-                          <strong>       Alert</strong>
+                      <div v-else-if="currentStatus==='pending'" style="display: inline-flex">
+                        <div class="pending" style="align-self: center;">
+                          Pending
                         </div>
+                        <div style="padding-left: 1vh">
+                          <p-button class="p-button-raised p-button-rounded p-button" @click="cancelApplication"
+                                    style="color: white; background: #920000; align-self: center;">
+                            <i class="pi pi-times" style="padding-right: 1vh"></i>
+                            Cancel
+                          </p-button>
+                        </div>
+                      </div>
 
-                      </template>
+                      <div v-else-if="currentStatus==='accepted'" style="display: inline-flex">
+                        <div class="accepted" style="align-self: center;">
+                          Accepted
+                        </div>
+                        <div style="padding-left: 1vh">
+                          <p-button class="p-button-raised p-button-rounded p-button" @click="cancelApplication"
+                                    style="color: white; background: #920000; align-self: center;">
+                            <i class="pi pi-times" style="padding-right: 1vh"></i>
+                            Cancel
+                          </p-button>
+                        </div>
+                      </div>
 
-                      <p class="p-m-0">
-                        Please login first</p>
-                      <template #footer>
-                        <p-button label="OK" icon="pi pi-check" @click="closeLoginErrorModal" autofocus />
-                      </template>
-                    </p-dialog>
+                      <div v-else-if="currentStatus==='rejected'">
+                        <div class="rejected" style="align-self: center;">
+                          Rejected
+                        </div>
+                      </div>
 
-                  </template>
+                      <div v-else>
+                        <div class="unavailable" style="align-self: center;">
+                          Unavailable
+                        </div>
+                      </div>
 
-                </p-card>
+                      <p-dialog v-model:visible="displayLoginErrorModal" :style="{width: '10vw'}" :modal="true">
+                        <template #header>
+                          <div style="font-size: x-large">
+                            <i class="pi pi-exclamation-triangle" />
+                            <strong>       Alert</strong>
+                          </div>
+
+                        </template>
+
+                        <p class="p-m-0">
+                          Please login first</p>
+                        <template #footer>
+                          <p-button label="OK" icon="pi pi-check" @click="closeLoginErrorModal" autofocus />
+                        </template>
+                      </p-dialog>
+
+                    </template>
+
+                  </p-card>
+                </div>
               </div>
 
             </div>
@@ -240,8 +242,8 @@
             </div>
           </template>
           <template #content>
-            <div class="sim-card" style="padding: 1vh">
-              <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="3" :numVisible="3"
+            <div class="sim-card">
+              <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="2" :numVisible="2"
                           :value="similarEvents" class="carousel" orientation="vertical"
                           verticalViewPortHeight="60vh">
 
@@ -701,6 +703,32 @@ export default {
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
   box-shadow: rgb(0 0 0 / 40%) 0px 0px 8px;
+}
+
+.similar-events-card >>> .p-card-body {
+  height: 100%;
+}
+
+.similar-events-card >>> .p-card-content {
+  height: 100%;
+  padding-top: 0;
+}
+
+.sim-card {
+  height: 100%;
+  padding: 0;
+}
+
+.sim-card >>> .p-carousel {
+  height: 100%;
+}
+
+.sim-card >>> .p-carousel-content {
+  overflow-y: hidden;
+}
+
+.sim-card >>> .p-carousel-indicators {
+  visibility: hidden;
 }
 
 .pending {
