@@ -162,7 +162,7 @@ const emailRegEx = /.+@.+\..+/;
 export default {
 
   name: "UserProfile",
-  props: ['closeUserProfile', 'navbarImage'],
+  props: ['closeUserProfile', 'navbarImage', 'updateNames'],
 
   data() {
     return {
@@ -283,6 +283,7 @@ export default {
                   .then(() => {
                     this.closeUserProfile();
                     this.navbarImage(image.objectURL);
+                    this.updateNames(this.firstName, this.lastName);
                   })
                   .catch(err => {
                     console.log(err);})
@@ -301,6 +302,7 @@ export default {
 
       }
     },
+
 
     showEditError(err) {
       this.editErrorMsg = err;

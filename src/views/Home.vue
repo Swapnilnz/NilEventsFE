@@ -168,9 +168,7 @@ export default {
           .then(res => {
             this.events = [];
             for (let i = 0; i < res.data.length; i++) {
-              if (res.data[i].title.toLowerCase().includes(this.query.toLowerCase())) {
                 this.events.push(res.data[i]);
-              }
             }
 
           }).catch(err => {
@@ -189,9 +187,7 @@ export default {
               this.events = [];
 
               for (let i = 0; i < res.data.length; i++) {
-                if (res.data[i].title.toLowerCase().includes(this.query.toLowerCase())) {
                   this.events.push(res.data[i]);
-                }
               }
 
             }).catch(err => {
@@ -203,9 +199,7 @@ export default {
               this.events = [];
 
               for (let i = 0; i < res.data.length; i++) {
-                if (res.data[i].title.toLowerCase().includes(this.query.toLowerCase())) {
                   this.events.push(res.data[i]);
-                }
               }
             }).catch(err => {
           console.error(err);

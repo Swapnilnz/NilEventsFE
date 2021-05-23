@@ -11,7 +11,7 @@
     </div>
     <br>
     <div>
-      <p-table :value="hostedEvents" dataKey="id" responsiveLayout="scroll" removableSort>
+      <p-table :value="hostedEvents" dataKey="id" responsiveLayout="scroll" removableSort style="padding: 1vh;">
 
         <p-column field="title" header="Title" sortable>
           <template #body="slotProps">
@@ -31,6 +31,7 @@
 
         <p-column field="fee" header="Fee ($)" sortable></p-column>
 
+<!--        ATTENDEE POPUP-->
         <p-column field="attendees" header="Attendees">
           <template #body="slotProps">
             <p-button icon="pi pi-user" label="Attendees" style="background: rgb(162 0 255)" @click="displayAttendeeDialogMethod(slotProps.data)"/>
@@ -44,7 +45,7 @@
                   Event Attendees
                 </div>
 
-                  <p-table :value="currAttendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1">
+                  <p-table :value="currAttendees" removableSort responsiveLayout="scroll" sortField="dateOfInterest" :sortOrder="1" style="padding: 1vh">
 
                     <p-column field="firstName" header="First name" sortable></p-column>
                     <p-column field="lastName" header="Last name" sortable></p-column>
@@ -93,9 +94,10 @@
         <p-column field="delete" header="Delete">
           <template #body="slotProps">
             <p-button icon="pi pi-times" style="background: #a70101" :disabled="inPast(slotProps.data.date)" @click="deleteEvent($event, slotProps.data.id)"/>
-            <p-confirm></p-confirm>
           </template>
         </p-column>
+        <p-confirm></p-confirm>
+
       </p-table>
 <!--      EDIT MODAL-->
       <p-dialog v-model:visible="displayUpdateEvent" :closable="true" :modal="true" :showHeader="false"
@@ -326,14 +328,19 @@ export default {
       let attendeeId = attendeeInfo.attendeeId;
       let newStatus = event.value.toLowerCase();
 
-      if (currEvent.attendeeCount < currEvent.capacity) {
+      if (currEvent.attendeeCount < currEvent.capacity || newStatus === 'pending' || newStatus === 'rejected') {
         api.attendance.updateAttendance(eventId, attendeeId, newStatus)
             .then(() => {
               for (let i = 0; i < this.hostedEvents.length; i++ ) {
                 for (let j = 0; j < this.hostedEvents[i].attendees.length; j++) {
                   if (this.hostedEvents[i].attendees[j].attendeeId === attendeeId) {
                     this.hostedEvents[i].attendees[j].status = event.value.toLowerCase();
-                    this.currEvent.attendeeCount += 1
+                    if (newStatus === 'accepted') {
+                      this.currEvent.attendeeCount += 1
+                    } else if (newStatus === 'rejected') {
+                      this.currEvent.attendeeCount -= 1
+                    }
+                    this.messages = [];
                   }
                 }
               }

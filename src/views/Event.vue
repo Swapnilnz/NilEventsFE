@@ -17,9 +17,9 @@
       <!--      MAIN CONTENT-->
       <div class="all-boxes"
            style="width: 130vh;
-         background: white;
+         background: none;
          margin-top: 2vh;
-         -webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
+         /*-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);*/
          border-radius: 30px; height: 84vh; text-align: center">
 
         <div class="p-grid nested-grid" style="padding: 1vh; height: 85vh">
@@ -29,12 +29,13 @@
               <div class="box box-stretched">
                 <p-card class="img-card" style="width: 100%; height: 100%">
                   <template #header>
-                    <img :src="`${eventInfo.eventImage}`" class="event-img" style="height: 45vh"/>
-                  </template>
-                  <template #footer>
-                    <div class="img-title"
-                         style="padding-bottom: 1vh; font-size: 3vh; text-shadow: 5px 5px 5px black;">
+                    <div class="event-title" style="font-size: 3vh; padding-top: 1vh">
                       {{ eventInfo.title }}
+                    </div>
+                  </template>
+                  <template #content>
+                    <div>
+                      <img :src="`${eventInfo.eventImage}`" class="event-img"/>
                     </div>
                   </template>
                 </p-card>
@@ -72,10 +73,10 @@
 
 
           <div class="p-col-4">
-            <div class="p-grid" style="height: 100%">
+            <div class="p-grid" >
               <!--                USER INFO-->
               <div class="p-col-12">
-                <div class="box box-stretched">
+                <div class="box">
 
                   <p-card class="user-img-card" style="width: 100%; height: 100%">
                     <template #header>
@@ -231,7 +232,7 @@
       <!--      SIMILAR EVENTS-->
       <div class="similar-events-wrapper"
            style="width: 30vh; background: white; margin-top: 2vh;-webkit-box-shadow: 5px 5px 15px rgba(0,0,0,0.4);
-         border-radius: 30px; height: 84vh; text-align: center; margin-left: 1vh;">
+         border-radius: 30px; height: 81vh; text-align: center; margin-left: 1vh;">
         <p-card class="similar-events-card" style="width: 100%; height: 100%">
           <template #header>
             <div class="user-name" style="font-size: 3vh; padding-top: 1vh">
@@ -240,22 +241,21 @@
           </template>
           <template #content>
             <div class="sim-card" style="padding: 1vh">
-              <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="2" :numVisible="2"
+              <p-carousel :autoplayInterval="5000" :indicatorsContentClass="null" :numScroll="3" :numVisible="3"
                           :value="similarEvents" class="carousel" orientation="vertical"
                           verticalViewPortHeight="60vh">
 
                 <template #item="slotProps">
                     <div class="product-item" style="padding-top: 0; cursor: pointer;" @click="routeToEvent(slotProps.data.eventId)">
                       <div class="product-item-content" style="padding-top: 0">
-
-                        <div style="padding-top: 0">
+                        <div style="padding-top: 1vh">
                           <i class="pi pi-tag" style="font-size: 1vh; padding-right:0.5vh"></i>
-                          <span class="product-category"><small>{{getCategoriesFromId(slotProps.data.categories)}}</small></span>
+                          <span class="product-category"><small>{{getCategoriesFromId(slotProps.data.categories, true)}}</small></span>
                         </div>
                         <br>
                         <div class="p-mb-3">
                             <img :alt="slotProps.data.title" :src="`${slotProps.data.eventImage}`"
-                                 class="product-image zoom" style="max-height: 10vh; max-width: 10vw" />
+                                 class="product-image zoom" style="max-height: 8vh; max-width: 10vw" />
                         </div>
                         <div>
                           <h4 class="p-mb-1">{{ slotProps.data.title }}</h4>
@@ -315,7 +315,7 @@ export default {
 
   methods: {
 
-    getCategoriesFromId(ids) {
+    getCategoriesFromId(ids, truncate) {
       let names = []
       for (let i = 0; i < ids.length; i++) {
         for (let j = 0; j < this.allCategories.length; j++) {
@@ -324,7 +324,19 @@ export default {
           }
         }
       }
-      return `Categories: ${names.join(', ')}`;
+      let string = `Categories: ${names.join(', ')}`;
+      if (truncate) {
+       string = this.truncate(string)
+      }
+      return string;
+    },
+
+    truncate(string) {
+      if (string.length > 42) {
+        string = string.slice(0, 42);
+        string += '...'
+      }
+      return string;
     },
 
     getStatus() {
@@ -579,15 +591,12 @@ export default {
 }
 
 .img-card >>> .p-card-header {
-  padding: 1vh;
-}
-
-.img-card >>> .p-card-footer {
   background: #830caa;
-  border-bottom-left-radius: 30px;
-  border-bottom-right-radius: 30px;
   min-height: 5vh;
   color: white;
+  border-top-left-radius: 30px;
+  border-top-right-radius: 30px;
+  box-shadow: rgb(0 0 0 / 40%) 0px 0px 8px;
 }
 
 .img-card >>> .p-card-body {
@@ -611,6 +620,7 @@ export default {
   color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+  box-shadow: rgb(0 0 0 / 40%) 0px 0px 8px;
 }
 .info-card >>> .p-card-content {
   padding: 0;
@@ -634,6 +644,7 @@ export default {
   color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+  box-shadow: rgb(0 0 0 / 40%) 0px 0px 8px;
 }
 
 .user-img-card >>> .p-card-content {
@@ -642,7 +653,9 @@ export default {
 
 .event-img {
   border-radius: 2vh;
-  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4)
+  -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
+  height: 45vh;
+  margin: 1vh;
 }
 
 .all-attendees-card {
@@ -656,6 +669,7 @@ export default {
   color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+  box-shadow: rgb(0 0 0 / 40%) 0px 0px 8px;
 }
 
 .attendees-table >>> .p-datatable-wrapper {
@@ -686,6 +700,7 @@ export default {
   color: white;
   border-top-left-radius: 30px;
   border-top-right-radius: 30px;
+  box-shadow: rgb(0 0 0 / 40%) 0px 0px 8px;
 }
 
 .pending {

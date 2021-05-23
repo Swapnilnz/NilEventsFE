@@ -239,7 +239,7 @@
           <p-dialog v-model:visible="displayUserProfile" :closable="false" :modal="true" :showHeader="false"
                     :style="{width: '30vw'}"
                     contentStyle="padding:0; border-radius: 15px" style="border-radius: 15px">
-            <UserProfile :close-user-profile="closeUserProfile" :navbar-image="updateImage"></UserProfile>
+            <UserProfile :close-user-profile="closeUserProfile" :navbar-image="updateImage" :update-names="updateNames"></UserProfile>
           </p-dialog>
 
           <div class="logout-btn" style="padding: 1vh;">
@@ -256,7 +256,7 @@
           </div>
 
           <div class="profile-img" style="padding-top: 1.5vh">
-            <img :src="`${navbarInfo.image}`" class="img-thumbnail" style="width: 5vh; height: 5vh; ">
+            <img :src="`${navbarInfo.image}`" class="img-thumbnail" style="width: 4vh; height: 4vh; ">
           </div>
 
 
@@ -438,6 +438,7 @@ export default {
               this.closeSignUp();
               this.showRegisterSuccess();
               this.login(payload.email, payload.password, image);
+
             }
           }).catch(err => {
           if (err.response.status === 400) {
@@ -533,6 +534,11 @@ export default {
 
     updateImage(newImage) {
       this.navbarInfo.image = newImage;
+    },
+
+    updateNames(firstName, lastName) {
+      this.navbarInfo.loggedUserFirstName = firstName;
+      this.navbarInfo.loggedUserLastName = lastName;
     }
 
   }

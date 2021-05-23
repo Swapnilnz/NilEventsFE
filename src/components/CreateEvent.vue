@@ -38,7 +38,7 @@
         </div>
         <div class="email" style="text-align: center;">
                   <span class="p-input" style="border-radius: 10px; width: 75%">
-                    <p-textarea v-model="eventDescription" placeholder="e.g. 'A night of fun stuff'"
+                    <p-textarea :autoResize="true" rows="2" cols="30" v-model="eventDescription" placeholder="e.g. 'A night of fun stuff'"
                              style="border-radius: 20px; width: 100%;"
                              type="text"/>
                   </span>
@@ -229,9 +229,9 @@ export default {
       this.eventCapacity = (this.initData.capacity === "Unlimited") ? null : this.initData.capacity;
       this.selectedType = this.initData.isOnline ? 'Online' : 'In-Person';
       this.eventIsOnline = this.initData.isOnline;
-      this.eventURL = this.initData.url;
+      this.eventURL = this.initData.url || '';
       if (!this.eventIsOnline) {
-        this.eventVenue = this.initData.venue;
+        this.eventVenue = this.initData.venue || '';
       }
 
       this.eventDate = new Date(this.initData.date);
