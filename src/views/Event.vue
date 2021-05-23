@@ -656,8 +656,9 @@ export default {
 .event-img {
   border-radius: 2vh;
   -webkit-box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.4);
-  height: 45vh;
+  max-height: 45vh;
   margin: 1vh;
+  max-width: 96%;
 }
 
 .all-attendees-card {
