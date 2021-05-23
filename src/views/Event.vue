@@ -123,21 +123,21 @@
                       <div>
                         <i class="pi pi-filter icon"></i>
                         <span class="capacity">
-                      <strong>Capacity:</strong> {{ eventInfo.capacity }}
+                      <strong>Capacity:</strong> {{ eventInfo.capacity || 'Unlimited'}}
                     </span>
                       </div>
                       <hr>
                       <div>
                         <i class="pi pi-user icon"></i>
                         <span class="accepted-attendees">
-                      <strong>Accepted attendees:</strong> {{ eventInfo.attendeeCount }}
+                      <strong>Accepted attendees:</strong> {{ eventInfo.attendeeCount || 0}}
                     </span>
                       </div>
                       <hr>
                       <div>
                         <i class="pi pi-external-link icon"></i>
                         <span class="url">
-                      <strong>URL:</strong> {{ eventInfo.url || 'N/A' }}
+                          <strong>URL:</strong> <a :href="eventInfo.url">{{ eventInfo.url || 'N/A' }}</a>
                     </span>
                       </div>
                       <hr>
